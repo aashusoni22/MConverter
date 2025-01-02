@@ -379,7 +379,7 @@ const MarkdownPreviewer = () => {
               fontSize: fontSize,
               fontFamily: fontFamily,
             }}
-            className={`w-full h-[70vh] ${
+            className={`w-full  ${
               isEditorFullScreen ? "lg:h-[70vh]" : "lg:h-[70vh]"
             } p-4 ${
               isDarkTheme
@@ -581,7 +581,7 @@ const MarkdownPreviewer = () => {
             }}
             className={`prose prose-invert w-full font-mono ${
               isPreviewFullScreen ? "lg:h-[70vh]" : "lg:h-[70vh]"
-            } h-[75vh] p-4 ${
+            } p-4 ${
               isDarkTheme
                 ? "bg-gray-800 text-gray-300"
                 : "bg-white text-gray-800"
