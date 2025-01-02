@@ -605,7 +605,7 @@ const MarkdownPreviewer = () => {
       </div>
 
       {/*Templates*/}
-      <div className="flex px-9">
+      <div className="lg:flex px-9">
         <h3
           className={`text-lg ${
             isDarkTheme ? "text-gray-300" : "text-gray-500"
@@ -613,7 +613,7 @@ const MarkdownPreviewer = () => {
         >
           Templates:
         </h3>
-        <ul className="flex ml-4 space-x-4 items-center">
+        <ul className="flex mt-2 lg:mt-0 lg:ml-4 space-x-4 items-center text-sm lg:text-base ">
           <li>
             <button
               onClick={() => loadTemplate("blogPost")}
@@ -636,6 +636,14 @@ const MarkdownPreviewer = () => {
               className="text-sky-300 hover:text-sky-400 underline"
             >
               To-Do List
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={() => loadTemplate("githubProfile")}
+              className="text-gray-300 hover:text-gray-400 underline"
+            >
+              GitHub Profile
             </button>
           </li>
         </ul>
