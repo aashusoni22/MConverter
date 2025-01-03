@@ -292,7 +292,7 @@ const MarkdownPreviewer = () => {
             isEditorFullScreen ? "h-[80vh] md:w-full" : "lg:w-1/2"
           } ${isPreviewFullScreen ? "hidden" : "block"} ${
             activeTab === "editor"
-              ? "block h-[70vh] md:h-[80vh]"
+              ? "block h-[65vh] md:h-[80vh]"
               : "hidden md:block"
           }`}
         >
@@ -549,7 +549,7 @@ const MarkdownPreviewer = () => {
                   ? "bg-gray-800 text-gray-300"
                   : "bg-white text-gray-800"
               } ${
-                activeTab === "editor" ? "h-[60vh]" : ""
+                activeTab === "editor" ? "h-[55vh]" : ""
               } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500  resize-none`}
               placeholder="Type your markdown here..."
               value={markdown}
@@ -566,7 +566,7 @@ const MarkdownPreviewer = () => {
             isPreviewFullScreen ? "h-[85vh] lg:h-[80vh] lg:w-full" : "lg:w-1/2"
           } ${isEditorFullScreen ? "hidden" : "block"} ${
             activeTab === "preview"
-              ? "block h-[70vh] md:h-[80vh]"
+              ? "block h-[65vh] md:h-[80vh]"
               : "hidden md:block"
           }`}
         >
@@ -750,7 +750,7 @@ const MarkdownPreviewer = () => {
                 ? "bg-gray-800 text-gray-300"
                 : "bg-white text-gray-800"
             } ${
-              activeTab === "preview" ? "h-[60vh]" : ""
+              activeTab === "preview" ? "h-[55vh]" : ""
             } rounded-md overflow-y-auto`}
           >
             {markdown ? (

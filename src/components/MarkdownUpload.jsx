@@ -12,7 +12,7 @@ const MarkdownUpload = ({ onMarkdownLoad, onStartWriting }) => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-[60vh] md:h-[70vh] gap-6 p-8 border-2 border-dashed rounded-lg border-gray-600">
+    <div className="flex flex-col items-center justify-center h-[55vh] md:h-[70vh] gap-6 p-8 border-2 border-dashed rounded-lg border-gray-600">
       <div className="flex flex-col items-center gap-2">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -34,14 +34,14 @@ const MarkdownUpload = ({ onMarkdownLoad, onStartWriting }) => {
       <div className="flex gap-4">
         <button
           onClick={onStartWriting}
-          className="px-2 py-2 md:px-4 md:py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors duration-300"
+          className="px-2 py-2 w-32 text-sm md:px-4 md:w-auto md:text-base text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors duration-300"
         >
           Write Markdown
         </button>
 
         <button
           onClick={() => fileInputRef.current?.click()}
-          className="px-2 py-2 md:px-4 md:py-2 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50 transition-colors duration-300"
+          className="px-2 py-2 w-24 text-sm md:px-4 md:w-auto md:text-base text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50 transition-colors duration-300"
         >
           Upload File
         </button>
