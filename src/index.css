@@ -3,3 +3,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --code-bg: 247 250 252;
+  --code-color: 229 62 62;
+}
+
+.dark {
+  --code-bg: 45 55 72;
+  --code-color: 245 101 101;
+}

@@ -1,10 +1,12 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
 import toast, { Toaster } from "react-hot-toast";
 import { ThemeContext } from "../context/ThemeContext";
 import templates from "../data/templates.json";
 import { jsPDF } from "jspdf";
+import SearchNav from "./SearchNav";
+import MarkdownUpload from "./MarkdownUpload";
 
 const MarkdownPreviewer = () => {
   const [markdown, setMarkdown] = useState("");
@@ -13,11 +15,16 @@ const MarkdownPreviewer = () => {
   const [isEditorFullScreen, setIsEditorFullScreen] = useState(false);
   const [isPreviewFullScreen, setIsPreviewFullScreen] = useState(false);
   const [fontSize, setFontSize] = useState("16px");
-  const [fontFamily, setFontFamily] = useState("Chakra");
+  const [fontFamily, setFontFamily] = useState("Arial");
   const [template, setTemplate] = useState("");
   const [activeTab, setActiveTab] = useState("editor");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchBarOpen, setIsSearchBarOpen] = useState(false);
+  const [editorEnabled, setEditorEnabled] = useState(false);
+  const [isSettingOpen, setIsSettingOpen] = useState(false);
 
   const { theme } = useContext(ThemeContext);
+  const textareaRef = useRef(null);
 
   const handleMarkdownChange = (event) => {
     setMarkdown(event.target.value);
@@ -222,6 +229,17 @@ const MarkdownPreviewer = () => {
     toast.success("PDF Downloaded");
   };
 
+  const toggleSearchBar = () => {
+    setIsSearchBarOpen((prev) => !prev);
+    if (isSearchBarOpen) {
+      setSearchQuery("");
+    }
+  };
+
+  const toggleSettings = () => {
+    setIsSettingOpen(true);
+  };
+
   const isDarkTheme = theme === "dark";
 
   return (
@@ -268,10 +286,10 @@ const MarkdownPreviewer = () => {
       <div className="flex flex-col lg:flex-row justify-between items-stretch px-8 py-7 gap-6">
         {/* Editor Section */}
         <div
-          className={`w-full lg:w-1/2 ${
+          className={`w-full ${
             isDarkTheme ? "bg-gray-900" : "bg-gray-100 text-gray-800"
           } rounded-md shadow-md p-4  ${
-            isEditorFullScreen ? "h-[80vh] lg:h-[80vh] lg:w-full" : "lg:w-1/2"
+            isEditorFullScreen ? "h-[80vh] md:w-full" : "lg:w-1/2"
           } ${isPreviewFullScreen ? "hidden" : "block"} ${
             activeTab === "editor"
               ? "block h-[55vh] md:h-[80vh]"
@@ -284,7 +302,7 @@ const MarkdownPreviewer = () => {
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
-                strokeWidth={2}
+                strokeWidth={1.5}
                 stroke="currentColor"
                 className="size-5 text-gray-400"
               >
@@ -297,13 +315,92 @@ const MarkdownPreviewer = () => {
 
               <h2 className="text-lg font-semibold">Editor</h2>
             </span>
-            <div className="flex space-x-4">
+            <div className="flex space-x-4 items-center">
+              <button
+                className={`hidden ${
+                  isDarkTheme
+                    ? "bg-gray-800 text-gray-200 hover:bg-gray-700"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                } md:flex items-center space-x-2 p-2 rounded-md transition-colors duration-300  `}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="size-5"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"
+                  />
+                </svg>
+                <p>Upload</p>
+              </button>
+
+              {isSearchBarOpen ? (
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search..."
+                    className={`px-4 py-[6px] w-72 rounded-lg focus:outline-none ${
+                      isDarkTheme
+                        ? "bg-gray-800 text-gray-100 placeholder-gray-400"
+                        : "bg-gray-200 text-gray-800 placeholder-gray-500"
+                    }`}
+                  />
+                  <SearchNav
+                    searchQuery={searchQuery}
+                    markdown={markdown}
+                    textareaRef={textareaRef}
+                  />
+                  <button
+                    onClick={toggleSearchBar}
+                    className="absolute top-0 right-0 mt-2 mr-2 text-gray-500 hover:text-gray-700"
+                    aria-label="Close search"
+                  >
+                    ✖
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={toggleSearchBar}
+                  className={`p-2 rounded-lg transition-all duration-200 ${
+                    isDarkTheme
+                      ? "bg-gray-800 hover:bg-gray-700 text-gray-100"
+                      : "bg-gray-200 hover:bg-gray-300 text-gray-800"
+                  }`}
+                  aria-label="Search"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                    stroke="currentColor"
+                    className="w-5 h-5"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M21 21l-4.35-4.35m2.1-6.6a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0z"
+                    />
+                  </svg>
+                </button>
+              )}
+
               {/* Font Size Dropdown */}
               <select
                 id="fontSize"
                 value={fontSize}
                 onChange={(e) => setFontSize(e.target.value)}
-                className={`p-1 h-9 text-gray-200 ${
+                className={`${
+                  !isSettingOpen ? "block" : "hidden"
+                } p-1 h-9 text-gray-200 ${
                   isDarkTheme ? "bg-gray-800 " : "text-gray-800"
                 } rounded-md`}
               >
@@ -319,16 +416,18 @@ const MarkdownPreviewer = () => {
                 id="fontStyles"
                 value={fontFamily}
                 onChange={(e) => setFontFamily(e.target.value)}
-                className={`p-1 h-9 text-gray-200 ${
-                  isDarkTheme ? "bg-gray-800 " : "text-gray-800"
+                className={`p-1 h-9 ${
+                  isDarkTheme
+                    ? "bg-gray-800 text-gray-200"
+                    : "bg-white text-gray-800"
                 } rounded-md`}
               >
-                <option value="Chakra">Chakra</option>
                 <option value="Arial">Arial</option>
                 <option value="Courier">Courier</option>
                 <option value="Georgia">Georgia</option>
                 <option value="Tahoma">Tahoma</option>
                 <option value="Verdana">Verdana</option>
+                <option value="Chakra">Chakra</option>
               </select>
 
               {/* Full Screen Button */}
@@ -336,8 +435,8 @@ const MarkdownPreviewer = () => {
                 onClick={toggleEditorFullScreen}
                 className={`p-2 rounded-md ${
                   isDarkTheme
-                    ? "bg-gray-800 text-gray-200"
-                    : " border-gray-800 text-gray-800 hover:bg-gray-200"
+                    ? "bg-gray-800 hover:bg-gray-700 text-gray-100"
+                    : "bg-gray-200 hover:bg-gray-300 text-gray-800"
                 } transition hidden lg:block`}
               >
                 {!isEditorFullScreen ? (
@@ -374,31 +473,75 @@ const MarkdownPreviewer = () => {
               </button>
             </div>
           </div>
-          <textarea
-            style={{
-              fontSize: fontSize,
-              fontFamily: fontFamily,
-            }}
-            className={`w-full  ${
-              isEditorFullScreen ? "lg:h-[70vh]" : "lg:h-[70vh]"
-            } p-4 ${
-              isDarkTheme
-                ? "bg-gray-800 text-gray-300"
-                : "bg-white text-gray-800"
-            } ${
-              activeTab === "editor" ? "h-[45vh]" : ""
-            } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500  resize-none`}
-            placeholder="Type your markdown here..."
-            value={markdown}
-            onChange={handleMarkdownChange}
-          />
+
+          {/*Settings for mobile view*/}
+          <div>
+            <button
+              onClick={toggleSettings}
+              className={`p-1 rounded-md ${
+                isDarkTheme
+                  ? "bg-gray-800 hover:bg-gray-700 text-gray-100"
+                  : "bg-gray-200 hover:bg-gray-300 text-gray-800"
+              }transition block lg:hidden`}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                />
+              </svg>
+            </button>
+          </div>
+
+          {!editorEnabled ? (
+            <MarkdownUpload
+              onMarkdownLoad={(content) => {
+                setMarkdown(content);
+                setEditorEnabled(true);
+              }}
+              onStartWriting={() => setEditorEnabled(true)}
+            />
+          ) : (
+            <textarea
+              ref={textareaRef}
+              style={{
+                fontSize: fontSize,
+                fontFamily: fontFamily,
+              }}
+              className={`w-full ${
+                isEditorFullScreen ? "lg:h-[70vh]" : "lg:h-[70vh]"
+              } p-4 ${
+                isDarkTheme
+                  ? "bg-gray-800 text-gray-300"
+                  : "bg-white text-gray-800"
+              } ${
+                activeTab === "editor" ? "h-[45vh]" : ""
+              } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500  resize-none`}
+              placeholder="Type your markdown here..."
+              value={markdown}
+              onChange={handleMarkdownChange}
+            />
+          )}
         </div>
 
         {/* Preview Section */}
         <div
           className={`w-full ${
             isDarkTheme ? "bg-gray-900" : "bg-gray-100 text-gray-800"
-          } rounded-md shadow-md p-4 ${
+          } rounded-md shadow-md p-4  ${
             isPreviewFullScreen ? "h-[85vh] lg:h-[80vh] lg:w-full" : "lg:w-1/2"
           } ${isEditorFullScreen ? "hidden" : "block"} ${
             activeTab === "preview"
@@ -433,11 +576,11 @@ const MarkdownPreviewer = () => {
               <button
                 onClick={copyMarkdown}
                 className={`p-2 rounded-md ${
-                  isDarkTheme ? "bg-gray-800" : "bg-white"
+                  isDarkTheme
+                    ? "bg-gray-800 hover:bg-gray-700"
+                    : "bg-white hover:bg-gray-200"
                 } transition text-yellow-400 ${
-                  markdown.length < 1
-                    ? "opacity-50"
-                    : "opacity-100 hover:bg-gray-700"
+                  markdown.length < 1 ? "opacity-50" : "opacity-100"
                 }`}
               >
                 <div
@@ -483,13 +626,13 @@ const MarkdownPreviewer = () => {
 
               {/*Download Button*/}
               <button
-                onClick={handleExportPDF}
+                onClick={downloadMarkdown}
                 className={`p-2 rounded-md ${
-                  isDarkTheme ? "bg-gray-800" : "bg-white"
+                  isDarkTheme
+                    ? "bg-gray-800 hover:bg-gray-700"
+                    : "bg-white  hover:bg-gray-200"
                 } transition text-green-400 ${
-                  markdown.length < 1
-                    ? "opacity-50"
-                    : "opacity-100 hover:bg-gray-700"
+                  markdown.length < 1 ? "opacity-50" : "opacity-100"
                 }`}
               >
                 {downloaded ? (
@@ -534,8 +677,8 @@ const MarkdownPreviewer = () => {
                 onClick={togglePreviewFullScreen}
                 className={`p-2 rounded-md ${
                   isDarkTheme
-                    ? "bg-gray-800 text-gray-200 hover:bg-gray-700"
-                    : " border-gray-800 text-gray-800 hover:bg-gray-200"
+                    ? "bg-gray-800 hover:bg-gray-700 text-gray-100"
+                    : "bg-gray-200 hover:bg-gray-300 text-gray-800"
                 } transition hidden lg:block`}
               >
                 {!isPreviewFullScreen ? (
@@ -579,7 +722,7 @@ const MarkdownPreviewer = () => {
               fontSize: fontSize,
               fontFamily: fontFamily,
             }}
-            className={`prose prose-invert w-full font-mono ${
+            className={`prose ${isDarkTheme ? "prose-invert" : ""} w-full ${
               isPreviewFullScreen ? "lg:h-[70vh]" : "lg:h-[70vh]"
             } p-4 ${
               isDarkTheme

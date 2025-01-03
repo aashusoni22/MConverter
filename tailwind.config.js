@@ -8,17 +8,21 @@ export default {
         DEFAULT: {
           css: {
             maxWidth: "100%",
+            color: "inherit",
             h1: {
+              color: "inherit",
               fontSize: "2.5rem",
               fontWeight: "bold",
               marginBottom: "1rem",
             },
             h2: {
+              color: "inherit",
               fontSize: "2rem",
               fontWeight: "bold",
               marginBottom: "1rem",
             },
             p: {
+              color: "inherit",
               marginBottom: "1rem",
               lineHeight: "1.6",
             },
@@ -28,14 +32,14 @@ export default {
               marginBottom: "1rem",
             },
             code: {
-              backgroundColor: "#2d3748",
+              backgroundColor: "rgb(var(--code-bg))",
+              color: "rgb(var(--code-color))",
               padding: "0.2rem 0.4rem",
               borderRadius: "0.25rem",
               fontFamily: "monospace",
-              color: "#f56565",
             },
             pre: {
-              backgroundColor: "#2d3748",
+              backgroundColor: "rgb(var(--code-bg))",
               padding: "1rem",
               borderRadius: "0.5rem",
               overflowX: "auto",
@@ -44,6 +48,7 @@ export default {
           },
         },
       },
+
       fontFamily: {
         chakra: ["Chakra Petch", "serif"],
         arial: ["Arial", "sans-serif"],
