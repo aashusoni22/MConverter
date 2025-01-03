@@ -21,7 +21,7 @@ const MarkdownPreviewer = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchBarOpen, setIsSearchBarOpen] = useState(false);
   const [editorEnabled, setEditorEnabled] = useState(false);
-  const [isSettingOpen, setIsSettingOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const { theme } = useContext(ThemeContext);
   const textareaRef = useRef(null);
@@ -237,7 +237,7 @@ const MarkdownPreviewer = () => {
   };
 
   const toggleSettings = () => {
-    setIsSettingOpen(true);
+    setIsSettingsOpen((prev) => !prev);
   };
 
   const isDarkTheme = theme === "dark";
@@ -312,34 +312,11 @@ const MarkdownPreviewer = () => {
                   d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
                 />
               </svg>
-
               <h2 className="text-lg font-semibold">Editor</h2>
             </span>
-            <div className="flex space-x-4 items-center">
-              <button
-                className={`hidden ${
-                  isDarkTheme
-                    ? "bg-gray-800 text-gray-200 hover:bg-gray-700"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                } md:flex items-center space-x-2 p-2 rounded-md transition-colors duration-300  `}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="size-5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"
-                  />
-                </svg>
-                <p>Upload</p>
-              </button>
 
+            <div className="flex items-center space-x-2">
+              {/* Search Bar */}
               {isSearchBarOpen ? (
                 <div className="relative">
                   <input
@@ -347,10 +324,10 @@ const MarkdownPreviewer = () => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search..."
-                    className={`px-4 py-[6px] w-72 rounded-lg focus:outline-none ${
+                    className={`pl-4 pr-32 py-[6px] text-[15px] rounded-lg focus:outline-none w-48 md:w-72 ${
                       isDarkTheme
-                        ? "bg-gray-800 text-gray-100 placeholder-gray-400"
-                        : "bg-gray-200 text-gray-800 placeholder-gray-500"
+                        ? "bg-gray-800 text-gray-100"
+                        : "bg-gray-200 text-gray-800"
                     }`}
                   />
                   <SearchNav
@@ -360,8 +337,7 @@ const MarkdownPreviewer = () => {
                   />
                   <button
                     onClick={toggleSearchBar}
-                    className="absolute top-0 right-0 mt-2 mr-2 text-gray-500 hover:text-gray-700"
-                    aria-label="Close search"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2"
                   >
                     ✖
                   </button>
@@ -369,12 +345,11 @@ const MarkdownPreviewer = () => {
               ) : (
                 <button
                   onClick={toggleSearchBar}
-                  className={`p-2 rounded-lg transition-all duration-200 ${
+                  className={`p-2 rounded-lg ${
                     isDarkTheme
-                      ? "bg-gray-800 hover:bg-gray-700 text-gray-100"
-                      : "bg-gray-200 hover:bg-gray-300 text-gray-800"
+                      ? "bg-gray-800 hover:bg-gray-700"
+                      : "bg-gray-200 hover:bg-gray-300"
                   }`}
-                  aria-label="Search"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -393,118 +368,164 @@ const MarkdownPreviewer = () => {
                 </button>
               )}
 
-              {/* Font Size Dropdown */}
-              <select
-                id="fontSize"
-                value={fontSize}
-                onChange={(e) => setFontSize(e.target.value)}
-                className={`${
-                  !isSettingOpen ? "block" : "hidden"
-                } p-1 h-9 text-gray-200 ${
-                  isDarkTheme ? "bg-gray-800 " : "text-gray-800"
-                } rounded-md`}
-              >
-                <option value="12px">12px</option>
-                <option value="14px">14px</option>
-                <option value="16px">16px</option>
-                <option value="18px">18px</option>
-                <option value="20px">20px</option>
-              </select>
-
-              {/* Font Style Dropdown */}
-              <select
-                id="fontStyles"
-                value={fontFamily}
-                onChange={(e) => setFontFamily(e.target.value)}
-                className={`p-1 h-9 ${
-                  isDarkTheme
-                    ? "bg-gray-800 text-gray-200"
-                    : "bg-white text-gray-800"
-                } rounded-md`}
-              >
-                <option value="Arial">Arial</option>
-                <option value="Courier">Courier</option>
-                <option value="Georgia">Georgia</option>
-                <option value="Tahoma">Tahoma</option>
-                <option value="Verdana">Verdana</option>
-                <option value="Chakra">Chakra</option>
-              </select>
-
-              {/* Full Screen Button */}
+              {/* Settings Button for Mobile */}
               <button
-                onClick={toggleEditorFullScreen}
-                className={`p-2 rounded-md ${
+                onClick={toggleSettings}
+                className={`p-2 rounded-lg md:hidden ${
                   isDarkTheme
-                    ? "bg-gray-800 hover:bg-gray-700 text-gray-100"
-                    : "bg-gray-200 hover:bg-gray-300 text-gray-800"
-                } transition hidden lg:block`}
+                    ? "bg-gray-800 hover:bg-gray-700"
+                    : "bg-gray-200 hover:bg-gray-300"
+                }`}
               >
-                {!isEditorFullScreen ? (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2}
-                    stroke="currentColor"
-                    className="size-5"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2}
-                    stroke="currentColor"
-                    className="size-5"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M9 9V4.5M9 9H4.5M9 9 3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5 5.25 5.25"
-                    />
-                  </svg>
-                )}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                  />
+                </svg>
               </button>
+
+              {/* Desktop Controls */}
+              <div className="hidden md:flex items-center space-x-2">
+                <select
+                  value={fontSize}
+                  onChange={(e) => setFontSize(e.target.value)}
+                  className={`p-2 rounded-lg ${
+                    isDarkTheme
+                      ? "bg-gray-800 text-gray-200"
+                      : "bg-gray-200 text-gray-800"
+                  }`}
+                >
+                  <option value="12px">12px</option>
+                  <option value="14px">14px</option>
+                  <option value="16px">16px</option>
+                  <option value="18px">18px</option>
+                  <option value="20px">20px</option>
+                </select>
+
+                <select
+                  value={fontFamily}
+                  onChange={(e) => setFontFamily(e.target.value)}
+                  className={`p-2 rounded-lg ${
+                    isDarkTheme
+                      ? "bg-gray-800 text-gray-200"
+                      : "bg-gray-200 text-gray-800"
+                  }`}
+                >
+                  <option value="Arial">Arial</option>
+                  <option value="Courier">Courier</option>
+                  <option value="Georgia">Georgia</option>
+                  <option value="Tahoma">Tahoma</option>
+                  <option value="Verdana">Verdana</option>
+                  <option value="Chakra">Chakra</option>
+                </select>
+
+                <button
+                  onClick={toggleEditorFullScreen}
+                  className={`p-2 rounded-lg ${
+                    isDarkTheme
+                      ? "bg-gray-800 hover:bg-gray-700"
+                      : "bg-gray-200 hover:bg-gray-300"
+                  }`}
+                >
+                  {isEditorFullScreen ? (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={2}
+                      stroke="currentColor"
+                      className="w-5 h-5"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M9 9V4.5M9 9H4.5M9 9 3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5 5.25 5.25"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={2}
+                      stroke="currentColor"
+                      className="w-5 h-5"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"
+                      />
+                    </svg>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
 
-          {/*Settings for mobile view*/}
-          <div>
-            <button
-              onClick={toggleSettings}
-              className={`p-1 rounded-md ${
-                isDarkTheme
-                  ? "bg-gray-800 hover:bg-gray-700 text-gray-100"
-                  : "bg-gray-200 hover:bg-gray-300 text-gray-800"
-              }transition block lg:hidden`}
+          {/* Mobile Settings Menu */}
+          {isSettingsOpen && (
+            <div
+              className={`absolute right-12 top-52 z-50 w-48 md:hidden rounded-lg shadow-lg ${
+                isDarkTheme ? "bg-gray-800" : "bg-white"
+              }`}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="size-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                />
-              </svg>
-            </button>
-          </div>
+              <div className="p-3 space-y-3">
+                <div>
+                  <label className="block text-sm mb-1">Font Size</label>
+                  <select
+                    value={fontSize}
+                    onChange={(e) => setFontSize(e.target.value)}
+                    className={`w-full p-2 rounded-lg ${
+                      isDarkTheme
+                        ? "bg-gray-700 text-gray-200"
+                        : "bg-gray-100 text-gray-800"
+                    }`}
+                  >
+                    <option value="12px">12px</option>
+                    <option value="14px">14px</option>
+                    <option value="16px">16px</option>
+                    <option value="18px">18px</option>
+                    <option value="20px">20px</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm mb-1">Font Family</label>
+                  <select
+                    value={fontFamily}
+                    onChange={(e) => setFontFamily(e.target.value)}
+                    className={`w-full p-2 rounded-lg ${
+                      isDarkTheme
+                        ? "bg-gray-700 text-gray-200"
+                        : "bg-gray-100 text-gray-800"
+                    }`}
+                  >
+                    <option value="Arial">Arial</option>
+                    <option value="Courier">Courier</option>
+                    <option value="Georgia">Georgia</option>
+                    <option value="Tahoma">Tahoma</option>
+                    <option value="Verdana">Verdana</option>
+                    <option value="Chakra">Chakra</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          )}
 
           {!editorEnabled ? (
             <MarkdownUpload
