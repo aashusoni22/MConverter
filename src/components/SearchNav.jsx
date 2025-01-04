@@ -49,9 +49,7 @@ const SearchNav = ({ searchQuery, markdown, textareaRef }) => {
   return searchQuery ? (
     <div className="flex items-center gap-2 absolute right-5 top-1 mr-1">
       <span className="text-sm text-gray-400">
-        {matches.length > 0
-          ? `${currentMatch + 1}/${matches.length}`
-          : "0 matches"}
+        {matches.length > 0 ? `${currentMatch + 1}/${matches.length}` : "0"}
       </span>
       <div className="flex flex-col -space-y-1">
         <button

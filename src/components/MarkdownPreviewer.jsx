@@ -283,7 +283,7 @@ const MarkdownPreviewer = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-col lg:flex-row justify-between items-stretch px-8 py-7 gap-6">
+      <div className="flex flex-col lg:flex-row justify-between items-stretch px-4 md:px-8 py-7 gap-6">
         {/* Editor Section */}
         <div
           className={`w-full ${
@@ -324,7 +324,7 @@ const MarkdownPreviewer = () => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search..."
-                    className={`pl-4 pr-32 py-[6px] text-[15px] rounded-lg focus:outline-none w-48 md:w-72 ${
+                    className={`pl-4 pr-[4.8rem] py-[6px] text-[15px] rounded-lg focus:outline-none w-[12rem] md:w-72 ${
                       isDarkTheme
                         ? "bg-gray-800 text-gray-100"
                         : "bg-gray-200 text-gray-800"
@@ -480,7 +480,7 @@ const MarkdownPreviewer = () => {
           {/* Mobile Settings Menu */}
           {isSettingsOpen && (
             <div
-              className={`absolute right-12 top-52 z-50 w-48 md:hidden rounded-lg shadow-lg ${
+              className={`absolute right-8 top-52 z-50 w-48 md:hidden rounded-lg shadow-lg ${
                 isDarkTheme ? "bg-gray-800" : "bg-white"
               }`}
             >
@@ -769,7 +769,7 @@ const MarkdownPreviewer = () => {
       </div>
 
       {/*Templates*/}
-      <div className="lg:flex px-9">
+      <div className="px-5 lg:flex md:px-9">
         <h3
           className={`text-lg ${
             isDarkTheme ? "text-gray-300" : "text-gray-500"
