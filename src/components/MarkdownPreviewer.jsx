@@ -71,164 +71,6 @@ const MarkdownPreviewer = () => {
     setTemplate(template.content);
     setEditorEnabled(true);
   };
-  const handleExportPDF = () => {
-    const doc = new jsPDF();
-
-    // Configure PDF settings
-    doc.setFont("helvetica");
-    const defaultFontSize = 11; // Reduced from 12
-    doc.setFontSize(defaultFontSize);
-
-    const margin = 20;
-    const pageWidth = doc.internal.pageSize.width;
-    const maxWidth = pageWidth - 2 * margin;
-    let currentY = margin;
-
-    // Parse markdown to HTML
-    const htmlContent = marked(markdown);
-    const cleanHtml = DOMPurify.sanitize(htmlContent);
-
-    // Create a temporary div to parse HTML content
-    const tempDiv = document.createElement("div");
-    tempDiv.innerHTML = cleanHtml;
-
-    // Process each element
-    const processElement = (element) => {
-      if (element.nodeType === Node.TEXT_NODE) {
-        if (element.textContent.trim()) {
-          const lines = doc.splitTextToSize(
-            element.textContent.trim(),
-            maxWidth
-          );
-          lines.forEach((line) => {
-            if (currentY > doc.internal.pageSize.height - margin) {
-              doc.addPage();
-              currentY = margin;
-            }
-            doc.text(line, margin, currentY);
-            currentY += defaultFontSize * 0.8; // Reduced line spacing
-          });
-          currentY += 2; // Reduced spacing after paragraphs
-        }
-        return;
-      }
-
-      switch (element.tagName) {
-        case "H1":
-          if (currentY > doc.internal.pageSize.height - margin) {
-            doc.addPage();
-            currentY = margin;
-          }
-          doc.setFontSize(22); // Reduced from 24
-          doc.setFont("helvetica", "bold");
-          doc.text(element.textContent, margin, currentY);
-          currentY += 15; // Reduced from 30
-          doc.setFontSize(defaultFontSize);
-          doc.setFont("helvetica", "normal");
-          break;
-
-        case "H2":
-          if (currentY > doc.internal.pageSize.height - margin) {
-            doc.addPage();
-            currentY = margin;
-          }
-          doc.setFontSize(18); // Reduced from 20
-          doc.setFont("helvetica", "bold");
-          doc.text(element.textContent, margin, currentY);
-          currentY += 12; // Reduced from 25
-          doc.setFontSize(defaultFontSize);
-          doc.setFont("helvetica", "normal");
-          break;
-
-        case "H3":
-          if (currentY > doc.internal.pageSize.height - margin) {
-            doc.addPage();
-            currentY = margin;
-          }
-          doc.setFontSize(14); // Reduced from 16
-          doc.setFont("helvetica", "bold");
-          doc.text(element.textContent, margin, currentY);
-          currentY += 10; // Reduced from 20
-          doc.setFontSize(defaultFontSize);
-          doc.setFont("helvetica", "normal");
-          break;
-
-        case "P":
-          if (currentY > doc.internal.pageSize.height - margin) {
-            doc.addPage();
-            currentY = margin;
-          }
-          const lines = doc.splitTextToSize(element.textContent, maxWidth);
-          lines.forEach((line) => {
-            doc.text(line, margin, currentY);
-            currentY += defaultFontSize * 0.8; // Reduced line spacing
-          });
-          currentY += 5; // Reduced from 10
-          break;
-
-        case "UL":
-        case "OL":
-          Array.from(element.children).forEach((li, index) => {
-            if (currentY > doc.internal.pageSize.height - margin) {
-              doc.addPage();
-              currentY = margin;
-            }
-            const bullet = element.tagName === "OL" ? `${index + 1}.` : "•";
-            const lines = doc.splitTextToSize(li.textContent, maxWidth - 10);
-            doc.text(bullet, margin, currentY);
-            lines.forEach((line, lineIndex) => {
-              doc.text(
-                line,
-                margin + 10,
-                currentY + lineIndex * (defaultFontSize * 0.8)
-              ); // Reduced line spacing
-            });
-            currentY += lines.length * (defaultFontSize * 0.8) + 2; // Reduced spacing
-          });
-          currentY += 5; // Reduced from 10
-          break;
-
-        case "A":
-          if (currentY > doc.internal.pageSize.height - margin) {
-            doc.addPage();
-            currentY = margin;
-          }
-          const text = element.textContent;
-          const link = element.href;
-          doc.setTextColor(0, 0, 255);
-          doc.textWithLink(text, margin, currentY, { url: link });
-          doc.setTextColor(0, 0, 0);
-          currentY += defaultFontSize * 0.8; // Reduced spacing
-          break;
-
-        case "CODE":
-        case "PRE":
-          if (currentY > doc.internal.pageSize.height - margin) {
-            doc.addPage();
-            currentY = margin;
-          }
-          doc.setFont("courier", "normal");
-          const codeLines = element.textContent.split("\n");
-          codeLines.forEach((line) => {
-            const wrappedLines = doc.splitTextToSize(line, maxWidth - 10);
-            wrappedLines.forEach((wrappedLine) => {
-              doc.text(wrappedLine, margin, currentY);
-              currentY += defaultFontSize * 0.8; // Reduced line spacing
-            });
-          });
-          doc.setFont("helvetica", "normal");
-          currentY += 5; // Reduced from 10
-          break;
-      }
-    };
-
-    // Process all elements
-    Array.from(tempDiv.childNodes).forEach(processElement);
-
-    // Save the PDF
-    doc.save("markdown-formatted.pdf");
-    toast.success("PDF Downloaded");
-  };
 
   const toggleSearchBar = () => {
     setIsSearchBarOpen((prev) => !prev);
@@ -239,6 +81,37 @@ const MarkdownPreviewer = () => {
 
   const toggleSettings = () => {
     setIsSettingsOpen((prev) => !prev);
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      // Replace this with your upload logic, e.g., Firebase or Cloudinary
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "your_upload_preset"); // For Cloudinary
+      const response = await fetch(
+        "https://api.cloudinary.com/v1_1/your_cloud_name/image/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+      const data = await response.json();
+
+      if (data.secure_url) {
+        // Construct Markdown syntax and insert it into the editor
+        const fileUrl = data.secure_url;
+        const markdownSyntax = `![${file.name}](${fileUrl})`; // For images
+        setMarkdown((prevMarkdown) => `${prevMarkdown}\n${markdownSyntax}`);
+        toast.success("File uploaded and added to editor!");
+      }
+    } catch (error) {
+      console.error("Upload failed:", error);
+      toast.error("Failed to upload file. Please try again.");
+    }
   };
 
   const isDarkTheme = theme === "dark";
@@ -293,7 +166,7 @@ const MarkdownPreviewer = () => {
             isEditorFullScreen ? "h-[80vh] md:w-full" : "lg:w-1/2"
           } ${isPreviewFullScreen ? "hidden" : "block"} ${
             activeTab === "editor"
-              ? "block h-[65vh] md:h-[80vh]"
+              ? "block h-[60vh] md:h-[80vh]"
               : "hidden md:block"
           }`}
         >
@@ -368,6 +241,39 @@ const MarkdownPreviewer = () => {
                   </svg>
                 </button>
               )}
+
+              {/* Upload Button */}
+              <button
+                onClick={() => document.getElementById("fileInput").click()}
+                className={`p-2 rounded-lg transition-all duration-200 ${
+                  isDarkTheme
+                    ? "bg-gray-800 hover:bg-gray-700 text-gray-100"
+                    : "bg-gray-200 hover:bg-gray-300 text-gray-800"
+                }`}
+                aria-label="Upload Image"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                  stroke="currentColor"
+                  className="w-[24px] h-[23px]"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"
+                  />
+                </svg>
+              </button>
+              <input
+                id="fileInput"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleImageUpload}
+              />
 
               {/* Settings Button for Mobile */}
               <button
@@ -550,7 +456,7 @@ const MarkdownPreviewer = () => {
                   ? "bg-gray-800 text-gray-300"
                   : "bg-white text-gray-800"
               } ${
-                activeTab === "editor" ? "h-[55vh]" : ""
+                activeTab === "editor" ? "h-[49vh]" : ""
               } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500  resize-none`}
               placeholder="Type your markdown here..."
               value={markdown}
@@ -567,7 +473,7 @@ const MarkdownPreviewer = () => {
             isPreviewFullScreen ? "h-[85vh] lg:h-[80vh] lg:w-full" : "lg:w-1/2"
           } ${isEditorFullScreen ? "hidden" : "block"} ${
             activeTab === "preview"
-              ? "block h-[65vh] md:h-[80vh]"
+              ? "block h-[60vh] md:h-[80vh]"
               : "hidden md:block"
           }`}
         >
@@ -751,7 +657,7 @@ const MarkdownPreviewer = () => {
                 ? "bg-gray-800 text-gray-300"
                 : "bg-white text-gray-800"
             } ${
-              activeTab === "preview" ? "h-[55vh]" : ""
+              activeTab === "preview" ? "h-[49vh]" : ""
             } rounded-md overflow-y-auto`}
           >
             {markdown ? (
