@@ -157,7 +157,53 @@ const MarkdownPreviewer = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-col lg:flex-row justify-between items-stretch px-4 md:px-8 py-7 gap-6">
+      {/*Templates*/}
+      <div className="px-5 py-6 lg:flex md:px-9">
+        <h3
+          className={`md:text-lg ${
+            isDarkTheme ? "text-gray-300" : "text-gray-500"
+          }`}
+        >
+          Get Started:
+        </h3>
+
+        <ul className="flex mt-2 lg:mt-0 lg:ml-4 space-x-4 items-center text-sm lg:text-base ">
+          <li>
+            <button
+              onClick={() => loadTemplate("blogPost")}
+              className="text-teal-400 hover:text-teal-400 underline"
+            >
+              Blog Post
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={() => loadTemplate("resume")}
+              className="text-rose-400 hover:text-rose-400 underline"
+            >
+              Resume
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={() => loadTemplate("todoList")}
+              className="text-sky-400 hover:text-sky-400 underline"
+            >
+              To-Do List
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={() => loadTemplate("githubProfile")}
+              className="text-gray-400 hover:text-gray-400 underline"
+            >
+              GitHub Profile
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <div className="flex flex-col lg:flex-row justify-between items-stretch px-4 md:px-8 py-2 gap-6">
         {/* Editor Section */}
         <div
           className={`w-full ${
@@ -673,52 +719,6 @@ const MarkdownPreviewer = () => {
             )}
           </div>
         </div>
-      </div>
-
-      {/*Templates*/}
-      <div className="px-5 lg:flex md:px-9">
-        <h3
-          className={`text-lg ${
-            isDarkTheme ? "text-gray-300" : "text-gray-500"
-          }`}
-        >
-          Templates:
-        </h3>
-
-        <ul className="flex mt-2 lg:mt-0 lg:ml-4 space-x-4 items-center text-sm lg:text-base ">
-          <li>
-            <button
-              onClick={() => loadTemplate("blogPost")}
-              className="text-teal-300 hover:text-teal-400 underline"
-            >
-              Blog Post
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={() => loadTemplate("resume")}
-              className="text-rose-300 hover:text-rose-400 underline"
-            >
-              Resume
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={() => loadTemplate("todoList")}
-              className="text-sky-300 hover:text-sky-400 underline"
-            >
-              To-Do List
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={() => loadTemplate("githubProfile")}
-              className="text-gray-300 hover:text-gray-400 underline"
-            >
-              GitHub Profile
-            </button>
-          </li>
-        </ul>
       </div>
     </div>
   );
