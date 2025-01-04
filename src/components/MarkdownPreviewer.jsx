@@ -69,6 +69,7 @@ const MarkdownPreviewer = () => {
     const template = templates[templateType];
     setMarkdown(template.content);
     setTemplate(template.content);
+    setEditorEnabled(true);
   };
   const handleExportPDF = () => {
     const doc = new jsPDF();
@@ -357,7 +358,7 @@ const MarkdownPreviewer = () => {
                     viewBox="0 0 24 24"
                     strokeWidth={2}
                     stroke="currentColor"
-                    className="w-5 h-5"
+                    className="w-5 h-5 md:w-[24px] md:h-[23px]"
                   >
                     <path
                       strokeLinecap="round"
@@ -777,6 +778,7 @@ const MarkdownPreviewer = () => {
         >
           Templates:
         </h3>
+
         <ul className="flex mt-2 lg:mt-0 lg:ml-4 space-x-4 items-center text-sm lg:text-base ">
           <li>
             <button

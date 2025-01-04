@@ -12,7 +12,7 @@ const MarkdownUpload = ({ onMarkdownLoad, onStartWriting }) => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-[55vh] md:h-[70vh] gap-6 p-8 border-2 border-dashed rounded-lg border-gray-600">
+    <div className="flex flex-col items-center justify-center h-[54vh] md:h-[69vh] gap-6 p-8 border-2 border-dashed rounded-lg border-gray-600">
       <div className="flex flex-col items-center gap-2">
         <svg
           xmlns="http://www.w3.org/2000/svg"
