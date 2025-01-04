@@ -9,7 +9,7 @@ const App = () => {
     <div
       className={`font-chakra min-h-screen ${
         theme === "dark" ? "bg-gray-800" : "bg-white"
-      } transition-colors duration-300`}
+      } transition-colors duration-300 overflow-y-hidden`}
     >
       <Header />
       <MarkdownPreviewer />
