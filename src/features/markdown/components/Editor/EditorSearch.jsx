@@ -1,16 +1,20 @@
-const SearchBar = ({
-  isDarkTheme,
-  isSearchBarOpen,
-  searchQuery,
-  setSearchQuery,
-  toggleSearchBar,
-}) => {
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setSearchQuery, toggleSearchBar } from "../../slices/markdownSlice";
+import SearchCount from "./SearchCount";
+
+const EditorSearch = ({ textareaRef, isDarkTheme }) => {
+  const dispatch = useDispatch();
+  const { searchQuery, isSearchBarOpen } = useSelector(
+    (state) => state.markdown
+  );
+
   return isSearchBarOpen ? (
     <div className="relative">
       <input
         type="text"
         value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
+        onChange={(e) => dispatch(setSearchQuery(e.target.value))}
         placeholder="Search..."
         className={`pl-4 pr-[4.8rem] py-[6px] text-[15px] rounded-lg focus:outline-none w-[12rem] md:w-72 ${
           isDarkTheme
@@ -18,8 +22,9 @@ const SearchBar = ({
             : "bg-gray-200 text-gray-800"
         }`}
       />
+      <SearchCount searchQuery={searchQuery} textareaRef={textareaRef} />
       <button
-        onClick={toggleSearchBar}
+        onClick={() => dispatch(toggleSearchBar())}
         className="absolute right-2 top-1/2 transform -translate-y-1/2"
       >
         ✖
@@ -27,7 +32,7 @@ const SearchBar = ({
     </div>
   ) : (
     <button
-      onClick={toggleSearchBar}
+      onClick={() => dispatch(toggleSearchBar())}
       className={`p-2 rounded-lg ${
         isDarkTheme
           ? "bg-gray-800 hover:bg-gray-700"
@@ -52,4 +57,4 @@ const SearchBar = ({
   );
 };
 
-export default SearchBar;
+export default EditorSearch;

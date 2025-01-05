@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
-import { ThemeContext } from "../context/ThemeContext";
+import { ThemeContext } from "../../../../context/ThemeContext";
 
-const SearchNav = ({ searchQuery, markdown, textareaRef }) => {
+const SearchCount = ({ searchQuery, markdown, textareaRef }) => {
   const { theme } = useContext(ThemeContext);
   const isDarkTheme = theme === "dark";
 
@@ -105,4 +105,4 @@ const SearchNav = ({ searchQuery, markdown, textareaRef }) => {
   ) : null;
 };
 
-export default SearchNav;
+export default SearchCount;
