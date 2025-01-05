@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useRef, useState, useEffect } from "react";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
 import toast, { Toaster } from "react-hot-toast";
@@ -7,6 +7,8 @@ import templates from "../data/templates.json";
 import { jsPDF } from "jspdf";
 import SearchNav from "./SearchNav";
 import MarkdownUpload from "./MarkdownUpload";
+import Joyride, { STATUS, ACTIONS } from "react-joyride";
+import { useMediaQuery } from "react-responsive";
 
 const MarkdownPreviewer = () => {
   const [markdown, setMarkdown] = useState("");
@@ -22,9 +24,98 @@ const MarkdownPreviewer = () => {
   const [isSearchBarOpen, setIsSearchBarOpen] = useState(false);
   const [editorEnabled, setEditorEnabled] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [runTour, setRunTour] = useState(false);
+  const [stepIndex, setStepIndex] = useState(0);
+  const [tourKey, setTourKey] = useState(0); // Add this to force Joyride re-render
+  const [showWelcomeModal, setShowWelcomeModal] = useState(() => {
+    return !localStorage.getItem("hideWelcome");
+  });
 
   const { theme } = useContext(ThemeContext);
   const textareaRef = useRef(null);
+
+  const isMobile = useMediaQuery({ maxWidth: 768 });
+
+  const getMobileSteps = () => [
+    {
+      target: ".mobile-tabs",
+      content: "Switch between editor and preview modes easily with these tabs",
+      placement: "bottom",
+      disableBeacon: true,
+    },
+    {
+      target: ".templates-section",
+      content: "Get started quickly with our pre-made templates",
+      placement: "bottom",
+    },
+    {
+      target: ".editor-section",
+      content:
+        "Write your Markdown here - tap the preview tab to see the result!",
+      placement: "bottom",
+    },
+    {
+      target: ".mobile-controls",
+      content: "Access all tools and settings from this menu",
+      placement: "top",
+    },
+  ];
+
+  const getDesktopSteps = () => [
+    {
+      target: ".templates-section",
+      content:
+        "Start your journey with our pre-made templates! Choose from Blog Posts, Resumes, and more.",
+      placement: "left",
+      disableBeacon: true,
+    },
+    {
+      target: ".editor-section",
+      content:
+        "Write or paste your Markdown content here. New to Markdown? Check out our handy cheat sheet!",
+      placement: "right",
+    },
+    {
+      target: ".preview-section",
+      content:
+        "Watch your content come to life! Your Markdown transforms into beautifully formatted text here.",
+      placement: "right",
+    },
+    {
+      target: ".editor-controls",
+      content:
+        "Customize your workspace with font settings and powerful search features.",
+      placement: "bottom",
+    },
+    {
+      target: ".preview-controls",
+      content:
+        "Export your work or copy the formatted content with a single click.",
+      placement: "bottom",
+    },
+  ];
+
+  const handleRestartTour = () => {
+    setStepIndex(0);
+    setTourKey((prevKey) => prevKey + 1);
+    setRunTour(true);
+  };
+
+  const handleJoyrideCallback = (data) => {
+    const { action, index, status, type } = data;
+
+    if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
+      setRunTour(false);
+      toast.success("Tour completed! Click the help icon anytime to restart.");
+    } else if ([ACTIONS.CLOSE].includes(action)) {
+      setRunTour(false);
+      toast("Tour closed. Click the help icon to restart anytime!");
+    }
+
+    if (type === "step:after") {
+      setStepIndex(index + 1);
+    }
+  };
 
   const handleMarkdownChange = (event) => {
     setMarkdown(event.target.value);
@@ -115,6 +206,150 @@ const MarkdownPreviewer = () => {
   };
 
   const isDarkTheme = theme === "dark";
+  const steps = isMobile ? getMobileSteps() : getDesktopSteps();
+
+  const WelcomeModal = () => {
+    if (!showWelcomeModal) return null;
+
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black bg-opacity-50 p-4">
+        <div
+          className={`w-full max-w-md transform rounded-xl p-6 md:p-8 shadow-2xl transition-all ${
+            theme === "dark" ? "bg-gray-800" : "bg-white"
+          }`}
+        >
+          <div className="relative">
+            <button
+              onClick={() => setShowWelcomeModal(false)}
+              className="absolute right-2 top-2 text-gray-400 hover:text-gray-500 transition-colors"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+
+            <div className="text-center">
+              <div className="mb-4 md:mb-6">
+                <svg
+                  className="mx-auto h-12 w-12 md:h-16 md:w-16 text-blue-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+
+              <h2
+                className={`text-2xl md:text-3xl font-bold mb-3 md:mb-4 ${
+                  theme === "dark" ? "text-white" : "text-gray-900"
+                }`}
+              >
+                Welcome to Markdown Preview! 👋
+              </h2>
+
+              <p
+                className={`mb-6 md:mb-8 text-sm md:text-base ${
+                  theme === "dark" ? "text-gray-300" : "text-gray-600"
+                }`}
+              >
+                Transform your ideas into beautifully formatted documents with
+                our powerful Markdown editor. Let's get you started!
+              </p>
+
+              <div className="flex flex-col gap-3 md:gap-4">
+                <button
+                  onClick={() => {
+                    setShowWelcomeModal(false);
+                    setTimeout(() => setRunTour(true), 400);
+                  }}
+                  className="w-full px-4 md:px-6 py-2 md:py-3 text-sm md:text-base bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200"
+                >
+                  Take the Tour
+                </button>
+
+                <button
+                  onClick={() => {
+                    setShowWelcomeModal(false);
+                  }}
+                  className={`w-full px-4 md:px-6 py-2 md:py-3 text-sm md:text-base rounded-lg transition-colors duration-200 ${
+                    theme === "dark"
+                      ? "border border-gray-600 hover:bg-gray-700"
+                      : "border border-gray-300 hover:bg-gray-100"
+                  }`}
+                >
+                  Skip Tour
+                </button>
+              </div>
+
+              <div className="mt-4 md:mt-6">
+                <label
+                  className={`flex items-center justify-center gap-2 text-xs md:text-sm ${
+                    theme === "dark" ? "text-gray-300" : "text-gray-600"
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    className="rounded border-gray-300 text-blue-500 focus:ring-blue-500"
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        localStorage.setItem("hideWelcome", "true");
+                      } else {
+                        localStorage.removeItem("hideWelcome");
+                      }
+                    }}
+                  />
+                  Don't show this again
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const HelpButton = () => {
+    return (
+      <button
+        onClick={handleRestartTour}
+        className={`fixed bottom-12 right-4 md:top-24 md:right-8 p-3 md:p-2 rounded-full shadow-lg transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 bg-gray-700 hover:bg-gray-600`}
+        aria-label="Restart Tour"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={1.5}
+          className="h-6 w-6 md:h-6 md:w-6"
+          stroke={theme === "dark" ? "#F3F4F6" : "#FFF"}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"
+          />
+        </svg>
+      </button>
+    );
+  };
 
   return (
     <div
@@ -122,10 +357,20 @@ const MarkdownPreviewer = () => {
         isDarkTheme ? "bg-gray-800" : "bg-white"
       } text-gray-200 transition-colors duration-300`}
     >
-      <Toaster position="top-center" />
-
+      <Toaster
+        position={isMobile ? "bottom-center" : "top-center"}
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: theme === "dark" ? "#1F2937" : "#FFFFFF",
+            color: theme === "dark" ? "#F3F4F6" : "#1F2937",
+            fontSize: isMobile ? "14px" : "16px",
+            padding: isMobile ? "8px 16px" : "16px 24px",
+          },
+        }}
+      />
       {/* Mobile Tab Switcher */}
-      <div className="md:hidden flex rounded-lg overflow-hidden mx-4 mt-4 border border-gray-200 dark:border-gray-700">
+      <div className="mobile-tabs md:hidden flex rounded-lg overflow-hidden mx-4 mt-4 border border-gray-200 dark:border-gray-700">
         <button
           onClick={() => setActiveTab("editor")}
           className={`flex-1 py-2 text-sm font-medium transition-colors ${
@@ -156,9 +401,63 @@ const MarkdownPreviewer = () => {
         </button>
       </div>
 
+      {showWelcomeModal && <WelcomeModal />}
+      <Joyride
+        key={tourKey}
+        steps={steps}
+        run={runTour}
+        continuous
+        showProgress
+        showSkipButton
+        stepIndex={stepIndex}
+        scrollToFirstStep
+        spotlightClicks
+        styles={{
+          options: {
+            arrowColor: theme === "dark" ? "#1F2937" : "#FFFFFF",
+            backgroundColor: theme === "dark" ? "#1F2937" : "#FFFFFF",
+            overlayColor: "rgba(0, 0, 0, 0.5)",
+            primaryColor: "#3B82F6",
+            textColor: theme === "dark" ? "#F3F4F6" : "#1F2937",
+            zIndex: 1000,
+            width: isMobile ? 290 : 400,
+            padding: isMobile ? 16 : 24,
+          },
+          tooltip: {
+            fontSize: isMobile ? 14 : 16,
+          },
+          tooltipTitle: {
+            fontSize: isMobile ? 16 : 18,
+          },
+          buttonNext: {
+            backgroundColor: "#3B82F6",
+            fontSize: isMobile ? 14 : 16,
+            padding: isMobile ? "8px 16px" : "12px 24px",
+          },
+          buttonBack: {
+            marginRight: 10,
+            fontSize: isMobile ? 14 : 16,
+            padding: isMobile ? "8px 16px" : "12px 24px",
+          },
+          buttonSkip: {
+            fontSize: isMobile ? 14 : 16,
+            padding: isMobile ? "8px 16px" : "12px 24px",
+          },
+        }}
+        callback={handleJoyrideCallback}
+        floaterProps={{
+          disableAnimation: true,
+          hideArrow: isMobile,
+        }}
+      />
+
+      {/*Tour Button*/}
+      <HelpButton />
+
       {/* Main Content */}
+
       {/*Templates*/}
-      <div className="px-5 py-6 lg:flex md:px-9">
+      <div className="px-5 py-6 lg:flex md:px-9 templates-section">
         <h3
           className={`md:text-lg ${
             isDarkTheme ? "text-gray-300" : "text-gray-500"
@@ -206,7 +505,7 @@ const MarkdownPreviewer = () => {
       <div className="flex flex-col lg:flex-row justify-between items-stretch px-4 md:px-8 py-2 gap-6">
         {/* Editor Section */}
         <div
-          className={`w-full ${
+          className={`editor-section w-full ${
             isDarkTheme ? "bg-gray-900" : "bg-gray-100 text-gray-800"
           } rounded-md shadow-md p-4  ${
             isEditorFullScreen ? "h-[80vh] md:w-full" : "lg:w-1/2"
@@ -235,7 +534,7 @@ const MarkdownPreviewer = () => {
               <h2 className="text-lg font-semibold">Editor</h2>
             </span>
 
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 editor-controls">
               {/* Search Bar */}
               {isSearchBarOpen ? (
                 <div className="relative">
@@ -433,7 +732,7 @@ const MarkdownPreviewer = () => {
           {/* Mobile Settings Menu */}
           {isSettingsOpen && (
             <div
-              className={`absolute right-8 top-52 z-50 w-48 md:hidden rounded-lg shadow-lg ${
+              className={`absolute right-8 top-72 z-50 w-48 md:hidden rounded-lg shadow-lg ${
                 isDarkTheme ? "bg-gray-800" : "bg-white"
               }`}
             >
@@ -513,7 +812,7 @@ const MarkdownPreviewer = () => {
 
         {/* Preview Section */}
         <div
-          className={`w-full ${
+          className={`preview-section w-full ${
             isDarkTheme ? "bg-gray-900" : "bg-gray-100 text-gray-800"
           } rounded-md shadow-md p-4  ${
             isPreviewFullScreen ? "h-[85vh] lg:h-[80vh] lg:w-full" : "lg:w-1/2"
@@ -545,7 +844,7 @@ const MarkdownPreviewer = () => {
             </span>
 
             {/*Buttons*/}
-            <div className="flex space-x-4">
+            <div className="flex space-x-2 preview-controls">
               {/*Copy Button*/}
               <button
                 onClick={copyMarkdown}
