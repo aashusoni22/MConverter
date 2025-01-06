@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { ThemeContext } from "./context/ThemeContext";
-import MarkdownPreviewer from "./features/markdown/components/MarkdownPreviewer";
+import MConverterComponents from "./features/markdown/components/MConverterComponents";
 import TourProvider from "./features/tour/components/TourProvider";
 import WelcomeModal from "./features/tour/components/WelcomeModal";
 import HelpButton from "./features/tour/components/HelpButton";
@@ -19,7 +19,7 @@ const App = () => {
       <TourProvider theme={theme} />
       <WelcomeModal theme={theme} />
       <HelpButton theme={theme} />
-      <MarkdownPreviewer />
+      <MConverterComponents />
     </div>
   );
 };

@@ -7,7 +7,7 @@ import PreviewSection from "./Preview/PreviewSection";
 import MobileTabs from "./MobileTabs";
 import TemplatesSection from "../../templates/components/TemplatesSection";
 
-const MarkdownPreviewer = () => {
+const MConverterComponents = () => {
   const { theme } = useContext(ThemeContext);
   const isDarkTheme = theme === "dark";
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -42,4 +42,4 @@ const MarkdownPreviewer = () => {
   );
 };
 
-export default MarkdownPreviewer;
+export default MConverterComponents;

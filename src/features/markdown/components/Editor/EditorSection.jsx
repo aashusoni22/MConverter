@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setMarkdown, setEditorEnabled } from "../../slices/markdownSlice";
 import EditorControls from "./EditorControls";
@@ -8,6 +8,7 @@ import MarkdownUpload from "../../../templates/components/MarkdownUpload";
 const EditorSection = ({ isDarkTheme }) => {
   const dispatch = useDispatch();
   const textareaRef = useRef(null);
+  const overlayRef = useRef(null);
   const {
     markdown,
     editorEnabled,
@@ -16,41 +17,48 @@ const EditorSection = ({ isDarkTheme }) => {
     isEditorFullScreen,
     activeTab,
     isPreviewFullScreen,
+    searchQuery,
   } = useSelector((state) => state.markdown);
 
   const handleMarkdownChange = (event) => {
     dispatch(setMarkdown(event.target.value));
   };
 
-  const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  // Sync overlay scroll with textarea
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    const overlay = overlayRef.current;
+
+    if (!textarea || !overlay) return;
+
+    const handleScroll = () => {
+      overlay.scrollTop = textarea.scrollTop;
+    };
+
+    textarea.addEventListener("scroll", handleScroll);
+    return () => textarea.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Create highlighted HTML content
+  const getHighlightedContent = () => {
+    if (!searchQuery) return markdown;
 
     try {
-      // Replace this with your upload logic
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("upload_preset", "your_upload_preset");
-      const response = await fetch(
-        "https://api.cloudinary.com/v1_1/your_cloud_name/image/upload",
-        {
-          method: "POST",
-          body: formData,
-        }
+      const escapedSearchQuery = searchQuery.replace(
+        /[.*+?^${}()|[\]\\]/g,
+        "\\$&"
       );
-      const data = await response.json();
-
-      if (data.secure_url) {
-        const fileUrl = data.secure_url;
-        const markdownSyntax = `![${file.name}](${fileUrl})`;
-        dispatch(
-          setMarkdown((prevMarkdown) => `${prevMarkdown}\n${markdownSyntax}`)
-        );
-        toast.success("File uploaded and added to editor!");
-      }
+      const parts = markdown.split(new RegExp(`(${escapedSearchQuery})`, "gi"));
+      return parts
+        .map((part, i) =>
+          part.toLowerCase() === searchQuery.toLowerCase()
+            ? `<mark class="bg-yellow-200 dark:bg-yellow-800">${part}</mark>`
+            : part
+        )
+        .join("");
     } catch (error) {
-      console.error("Upload failed:", error);
-      toast.error("Failed to upload file. Please try again.");
+      console.error("Regex error:", error);
+      return markdown;
     }
   };
 
@@ -68,11 +76,7 @@ const EditorSection = ({ isDarkTheme }) => {
     >
       <div className="flex justify-between items-center mb-5">
         <EditorHeader />
-        <EditorControls
-          textareaRef={textareaRef}
-          isDarkTheme={isDarkTheme}
-          onImageUpload={handleImageUpload}
-        />
+        <EditorControls textareaRef={textareaRef} isDarkTheme={isDarkTheme} />
       </div>
 
       {!editorEnabled ? (
@@ -84,23 +88,50 @@ const EditorSection = ({ isDarkTheme }) => {
           onStartWriting={() => dispatch(setEditorEnabled(true))}
         />
       ) : (
-        <textarea
-          ref={textareaRef}
-          style={{
-            fontSize: fontSize,
-            fontFamily: fontFamily,
-          }}
-          className={`w-full ${
-            isEditorFullScreen ? "lg:h-[70vh]" : "lg:h-[70vh]"
-          } p-4 ${
-            isDarkTheme ? "bg-gray-800 text-gray-300" : "bg-white text-gray-800"
-          } ${
-            activeTab === "editor" ? "h-[49vh]" : ""
-          } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none`}
-          placeholder="Type your markdown here..."
-          value={markdown}
-          onChange={handleMarkdownChange}
-        />
+        <div className="relative">
+          <textarea
+            ref={textareaRef}
+            style={{
+              fontSize: fontSize,
+              fontFamily: fontFamily,
+              color: "transparent",
+              caretColor: isDarkTheme ? "#e5e7eb" : "#1f2937",
+              background: "transparent",
+              position: "absolute",
+              top: 0,
+              left: 0,
+              margin: 0,
+              border: 0,
+              padding: "1rem",
+              resize: "none",
+              zIndex: 2,
+            }}
+            className={`w-full h-[50vh] md:h-[70vh] focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              activeTab === "editor" ? "h-[49vh]" : ""
+            } `}
+            placeholder="Type your markdown here..."
+            value={markdown}
+            onChange={handleMarkdownChange}
+          />
+          <div
+            ref={overlayRef}
+            style={{
+              fontSize: fontSize,
+              fontFamily: fontFamily,
+              padding: "1rem",
+              whiteSpace: "pre-wrap",
+              wordWrap: "break-word",
+              color: isDarkTheme ? "#e5e7eb" : "#1f2937",
+              position: "relative",
+              pointerEvents: "none",
+              minHeight: "100%",
+            }}
+            className={`w-full h-[50vh] md:h-[70vh] overflow-auto ${
+              isDarkTheme ? "bg-gray-800" : "bg-white"
+            } rounded-md`}
+            dangerouslySetInnerHTML={{ __html: getHighlightedContent() }}
+          />
+        </div>
       )}
     </div>
   );

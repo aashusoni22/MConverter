@@ -30,6 +30,7 @@ const EditorControls = ({ textareaRef, isDarkTheme, onImageUpload }) => {
             isDarkTheme={isDarkTheme}
           />
         </div>
+        <div></div>
       </div>
     </div>
   );
