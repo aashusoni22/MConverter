@@ -3,7 +3,7 @@ import React from "react";
 const FullScreenButton = ({ isFullScreen, toggleFullScreen, isDarkTheme }) => (
   <button
     onClick={toggleFullScreen}
-    className={`p-2 rounded-lg ${
+    className={`p-2 rounded-lg hidden md:block ${
       isDarkTheme
         ? "bg-gray-800 hover:bg-gray-700"
         : "bg-gray-200 hover:bg-gray-300"

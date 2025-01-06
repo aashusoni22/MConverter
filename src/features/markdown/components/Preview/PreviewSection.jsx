@@ -27,7 +27,7 @@ const PreviewSection = ({ isDarkTheme }) => {
         isPreviewFullScreen ? "h-[85vh] lg:h-[80vh] lg:w-full" : "lg:w-1/2"
       } ${isEditorFullScreen ? "hidden" : "block"} ${
         activeTab === "preview"
-          ? "block h-[60vh] md:h-[80vh]"
+          ? "block h-[50vh] md:h-[80vh]"
           : "hidden md:block"
       }`}
     >
@@ -46,7 +46,7 @@ const PreviewSection = ({ isDarkTheme }) => {
         } w-full ${isPreviewFullScreen ? "lg:h-[70vh]" : "lg:h-[70vh]"} p-4 ${
           isDarkTheme ? "bg-gray-800 text-gray-300" : "bg-white text-gray-800"
         } ${
-          activeTab === "preview" ? "h-[49vh]" : ""
+          activeTab === "preview" ? "h-[39.5vh]" : ""
         } rounded-md overflow-y-auto`}
       >
         {markdown ? (

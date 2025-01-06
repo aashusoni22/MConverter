@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { setMarkdown, setEditorEnabled } from "../../slices/markdownSlice";
 import EditorControls from "./EditorControls";
 import EditorHeader from "./EditorHeader";
-import MarkdownUpload from "../../../templates/components/MarkdownUpload";
+import MarkdownUpload from "./MarkdownUpload";
 
 const EditorSection = ({ isDarkTheme }) => {
   const dispatch = useDispatch();
@@ -70,7 +70,7 @@ const EditorSection = ({ isDarkTheme }) => {
         isEditorFullScreen ? "h-[80vh] md:w-full" : "lg:w-1/2"
       } ${isPreviewFullScreen ? "hidden" : "block"} ${
         activeTab === "editor"
-          ? "block h-[60vh] md:h-[80vh]"
+          ? "block h-[50vh] md:h-[80vh]"
           : "hidden md:block"
       }`}
     >
@@ -106,7 +106,7 @@ const EditorSection = ({ isDarkTheme }) => {
               resize: "none",
               zIndex: 2,
             }}
-            className={`w-full h-[50vh] md:h-[70vh] focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+            className={`w-full h-[39vh] md:h-[70vh] focus:outline-none focus:ring-2 focus:ring-blue-500 ${
               activeTab === "editor" ? "h-[49vh]" : ""
             } `}
             placeholder="Type your markdown here..."
@@ -126,7 +126,7 @@ const EditorSection = ({ isDarkTheme }) => {
               pointerEvents: "none",
               minHeight: "100%",
             }}
-            className={`w-full h-[50vh] md:h-[70vh] overflow-auto ${
+            className={`w-full h-[39vh] md:h-[70vh] overflow-auto ${
               isDarkTheme ? "bg-gray-800" : "bg-white"
             } rounded-md`}
             dangerouslySetInnerHTML={{ __html: getHighlightedContent() }}
