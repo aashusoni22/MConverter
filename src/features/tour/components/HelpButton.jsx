@@ -21,7 +21,7 @@ const HelpButton = ({ theme }) => {
     <button
       onClick={handleRestartTour}
       className={`fixed ${
-        isMobile && "bottom-12 right-4"
+        isMobile && "bottom-8 right-4"
       } md:top-24 md:right-8 p-3 md:p-2 rounded-full shadow-lg transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
         theme === "dark"
           ? "bg-gray-700 hover:bg-gray-600 text-gray-400"
