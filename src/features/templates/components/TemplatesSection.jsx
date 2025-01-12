@@ -46,7 +46,7 @@ const TemplatesSection = ({ isDarkTheme, onOpenTemplatesModal }) => {
   };
 
   return (
-    <div className="py-3 templates-button">
+    <div className="py-3 templates-button hidden md:block">
       <div className="max-w-screen-2xl lg:ml-1 py-3">
         <div className="flex items-center gap-3">
           {/* Quick start templates */}

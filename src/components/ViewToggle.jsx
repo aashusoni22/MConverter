@@ -1,14 +1,13 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { SplitSquareHorizontal, Maximize2, Edit3, Eye } from "lucide-react";
 import { setView } from "../features/markdown/slices/markdownSlice";
+import { ThemeContext } from "../context/ThemeContext";
 
 const ViewToggle = ({ isDarkTheme }) => {
   const dispatch = useDispatch();
-  const { view } = useSelector((state) => ({
-    view: state.markdown.view,
-    theme: state.theme,
-  }));
+  const { view } = useSelector((state) => state.markdown);
+  const { theme } = useContext(ThemeContext);
 
   const views = [
     {

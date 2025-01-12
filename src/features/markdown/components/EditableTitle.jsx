@@ -1,4 +1,3 @@
-// src/components/EditableTitle.jsx
 import React, { useState, useRef, useEffect } from "react";
 import { Check, X, Edit2 } from "lucide-react";
 

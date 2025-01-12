@@ -1,4 +1,3 @@
-// src/features/sidebar/components/DocumentsModal.jsx
 import React, { useContext } from "react";
 import { X, FolderIcon } from "lucide-react";
 import DocumentsList from "../../markdown/components/DocumentsList";

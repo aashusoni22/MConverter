@@ -65,7 +65,7 @@ const EditorSection = ({ isDarkTheme }) => {
         fontSize: settings.fontSize,
         fontFamily: settings.fontFamily,
       }}
-      className={`editor-section w-full ${
+      className={`editor-section w-96 md:w-full ${
         isDarkTheme ? "bg-gray-900" : "bg-gray-100"
       } rounded-md shadow-lg p-4 ${
         view === "editor"
