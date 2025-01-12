@@ -1,8 +1,8 @@
 # MConverter
 
 <div align="center">
-
-![MConverter Logo](https://asset.cloudinary.com/di6dpeonv/ecdef9a8691b0321eb63db5ed1508d1e)
+  
+![Remove background project (3)](https://github.com/user-attachments/assets/4fede922-949e-407e-afb1-50c6710f6fc1)
 
 ### A Modern Markdown Editor for the Modern Web
 
@@ -64,8 +64,10 @@ npm run dev
 ## 📸 Screenshots
 
 <div align="center">
-<img src="screenshot1.png" alt="MConverter Dark Mode" width="45%">
-<img src="screenshot2.png" alt="MConverter Light Mode" width="45%">
+<img src="https://github.com/user-attachments/assets/a77dfe1d-e5b0-4a09-9602-5add7c7d738e" alt="MConverter Dark Mode" width="45%">
+<img src="https://github.com/user-attachments/assets/8384a786-9460-4985-9d45-91d03c2f2193" alt="MConverter Light Mode" width="45%">
+<img src="https://github.com/user-attachments/assets/c3eb6852-1611-401f-ae12-96625a67c3ad" alt="MConverter Light Mode" width="45%">
+<img src="https://github.com/user-attachments/assets/9b13db87-3579-4da3-8615-bb99fa41bd5a" alt="MConverter Light Mode" width="45%">
 </div>
 
 ## 🌟 Key Features Explained
@@ -106,7 +108,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## 👥 Authors
 
-- Your Name - [GitHub](https://github.com/yourusername)
+- Aashutosh Soni - [GitHub](https://github.com/aashusoni22)
 
 ## 🙏 Acknowledgments
 
@@ -118,5 +120,5 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
 <div align="center">
-Made with ❤️ by [Your Name]
+Made with ❤️ by Aashutosh Soni
 </div>
