@@ -4,7 +4,7 @@ import { setCopied, setDownloaded } from "../../slices/markdownSlice";
 import { Check, Copy, Download } from "lucide-react";
 import toast from "react-hot-toast";
 
-const PreviewControls = ({ isDarkTheme }) => {
+const PreviewTools = ({ isDarkTheme }) => {
   const dispatch = useDispatch();
   const { markdown, copied, downloaded } = useSelector(
     (state) => state.markdown
@@ -58,4 +58,4 @@ const PreviewControls = ({ isDarkTheme }) => {
   );
 };
 
-export default PreviewControls;
+export default PreviewTools;

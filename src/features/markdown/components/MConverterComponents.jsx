@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { ThemeContext } from "../../../context/ThemeContext";
 import { Toaster } from "react-hot-toast";
@@ -7,12 +7,24 @@ import EditorSection from "./Editor/EditorSection";
 import PreviewSection from "./Preview/PreviewSection";
 import MobileTabs from "./MobileTabs";
 import TemplatesModal from "../../sidebar/components/TemplatesModal";
+import ViewToggle from "../../../components/ViewToggle";
+import { useDispatch } from "react-redux";
+import { useAuth } from "../../../context/AuthContext";
+import { fetchUserDocuments } from "../slices/documentsSlice";
 
 const MConverterComponents = () => {
+  const dispatch = useDispatch();
+  const { user } = useAuth();
   const { theme } = useContext(ThemeContext);
   const isDarkTheme = theme === "dark";
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const [showTemplatesModal, setShowTemplatesModal] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      dispatch(fetchUserDocuments(user.uid));
+    }
+  }, [dispatch, user]);
 
   return (
     <div
@@ -32,12 +44,14 @@ const MConverterComponents = () => {
           },
         }}
       />
-
       <MobileTabs />
-      <TemplatesSection
-        isDarkTheme={isDarkTheme}
-        onOpenTemplatesModal={() => setShowTemplatesModal(true)}
-      />
+      <div className="flex items-center justify-between mx-6">
+        <TemplatesSection
+          isDarkTheme={isDarkTheme}
+          onOpenTemplatesModal={() => setShowTemplatesModal(true)}
+        />
+        <ViewToggle isDarkTheme={isDarkTheme} />
+      </div>
       <TemplatesModal
         isOpen={showTemplatesModal}
         onClose={() => setShowTemplatesModal(false)}

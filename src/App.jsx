@@ -34,13 +34,13 @@ const App = () => {
           theme === "dark" ? "bg-gray-800" : "bg-white"
         } transition-colors duration-300`}
       >
-        <TourProvider theme={theme} />
+        <TourProvider theme={theme} className="z-50" />
         <WelcomeModal theme={theme} />
-        <Header className="fixed top-0 w-full z-50" />
+        <Header className="fixed top-0 w-full z-40" />
         <div className="flex">
-          <Sidebar />
+          <Sidebar className="z-30" />
           <main className="flex-1 transition-all duration-300 ml-20 lg:ml-24 lg:mr-4 mt-1">
-            <MConverterComponents />
+            <MConverterComponents className="z-20" />
           </main>
         </div>
         <HelpButton theme={theme} />

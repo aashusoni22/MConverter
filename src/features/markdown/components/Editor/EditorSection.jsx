@@ -1,27 +1,71 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setMarkdown, setEditorEnabled } from "../../slices/markdownSlice";
-import EditorHeader from "./EditorHeader";
 import MarkdownUpload from "./MarkdownUpload";
-import StatusBar from "../shared/StatusBar";
 import EditorTools from "./EditorTools";
 import { useSettings } from "../../../../hooks/useSettings";
-import { EditIcon } from "lucide-react";
+import { AlertCircle, CheckCircle, EditIcon, SaveIcon } from "lucide-react";
+import SaveDocumentModal from "../SaveDocumentModal";
+import { useAutoSave } from "../../../../hooks/useAutoSave";
 
 const EditorSection = ({ isDarkTheme }) => {
+  const [showSaveModal, setShowSaveModal] = useState(false);
   const dispatch = useDispatch();
   const textareaRef = useRef(null);
-  const { markdown, editorEnabled, fontSize, fontFamily, view } = useSelector(
+  const [savingStatus, setSavingStatus] = useState("idle");
+  const { markdown, editorEnabled, view } = useSelector(
     (state) => state.markdown
   );
   const { settings } = useSettings();
+  useAutoSave(setSavingStatus);
+
+  const getSavingIndicator = () => {
+    switch (savingStatus) {
+      case "saving":
+        return (
+          <div
+            className={`flex items-center space-x-2 text-sm ${
+              isDarkTheme ? "text-gray-400" : "text-gray-600"
+            }`}
+          >
+            <SaveIcon size={16} className="animate-spin" />
+            <span>Saving...</span>
+          </div>
+        );
+      case "saved":
+        return (
+          <div
+            className={`flex items-center space-x-2 text-sm ${
+              isDarkTheme ? "text-green-400" : "text-green-600"
+            }`}
+          >
+            <CheckCircle size={16} />
+            <span>Saved</span>
+          </div>
+        );
+      case "error":
+        return (
+          <div
+            className={`flex items-center space-x-2 text-sm ${
+              isDarkTheme ? "text-red-400" : "text-red-600"
+            }`}
+          >
+            <AlertCircle size={16} />
+            <span>Save failed</span>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <div
       style={{
         fontSize: settings.fontSize,
         fontFamily: settings.fontFamily,
       }}
-      className={`w-full ${
+      className={`editor-section w-full ${
         isDarkTheme ? "bg-gray-900" : "bg-gray-100"
       } rounded-md shadow-lg p-4 ${
         view === "editor"
@@ -47,7 +91,10 @@ const EditorSection = ({ isDarkTheme }) => {
               Editor
             </h2>
           </span>
-          <EditorTools editorRef={textareaRef} isDarkTheme={isDarkTheme} />
+          <div className="flex items-center space-x-2">
+            {getSavingIndicator()}
+            <EditorTools editorRef={textareaRef} isDarkTheme={isDarkTheme} />
+          </div>
         </div>
 
         {!editorEnabled ? (
@@ -71,7 +118,7 @@ const EditorSection = ({ isDarkTheme }) => {
                   color: isDarkTheme ? "#e5e7eb" : "#1f2937",
                   transition: "background-color 0.2s ease",
                 }}
-                className={`w-full h-full custom-scrollbar resize-none p-4 rounded-md focus:outline-none ${
+                className={`w-full custom-scrollbar resize-none p-4 h-[70vh]  rounded-md focus:outline-none ${
                   isDarkTheme
                     ? "bg-gray-800 placeholder-gray-500"
                     : "bg-white placeholder-gray-400"
@@ -80,7 +127,6 @@ const EditorSection = ({ isDarkTheme }) => {
                 spellCheck="false"
               />
             </div>
-            <StatusBar type="markdown" />
           </div>
         )}
       </div>
@@ -101,6 +147,11 @@ const EditorSection = ({ isDarkTheme }) => {
           background: ${isDarkTheme ? "#6b7280" : "#9ca3af"};
         }
       `}</style>
+
+      <SaveDocumentModal
+        isOpen={showSaveModal}
+        onClose={() => setShowSaveModal(false)}
+      />
     </div>
   );
 };

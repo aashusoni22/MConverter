@@ -68,7 +68,7 @@ const Header = () => {
           <div className="hidden md:flex items-center space-x-2">
             {/* GitHub Link */}
             <a
-              href="https://github.com"
+              href="https://github.com/aashusoni22/MConverter"
               target="_blank"
               rel="noopener noreferrer"
               className={`
@@ -134,7 +134,7 @@ const Header = () => {
           <div className="p-4 space-y-3">
             {/* Mobile GitHub Link */}
             <a
-              href="https://github.com"
+              href="https://github.com/aashusoni22/MConverter"
               target="_blank"
               rel="noopener noreferrer"
               className={`

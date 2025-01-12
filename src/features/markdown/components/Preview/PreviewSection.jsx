@@ -1,27 +1,18 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
 import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import rehypeSanitize from "rehype-sanitize";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { materialLight } from "react-syntax-highlighter/dist/esm/styles/prism";
-import PreviewControls from "./PreviewControls";
-import PreviewHeader from "./PreviewHeader";
-import StatusBar from "../shared/StatusBar";
+import PreviewTools from "./PreviewTools";
 import { useSettings } from "../../../../hooks/useSettings";
 import { Eye } from "lucide-react";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import rehypeRaw from "rehype-raw";
+import remarkGfm from "remark-gfm";
 
 const PreviewSection = ({ isDarkTheme }) => {
-  const {
-    markdown,
-    fontSize,
-    fontFamily,
-    isPreviewFullScreen,
-    isEditorFullScreen,
-    activeTab,
-    view,
-  } = useSelector((state) => state.markdown);
+  const { markdown, activeTab, view } = useSelector((state) => state.markdown);
   const { settings } = useSettings();
+  const renderedContent = useMemo(() => markdown, [markdown]);
 
   return (
     <div
@@ -50,7 +41,7 @@ const PreviewSection = ({ isDarkTheme }) => {
             Preview
           </h2>
         </span>
-        <PreviewControls isDarkTheme={isDarkTheme} />
+        <PreviewTools isDarkTheme={isDarkTheme} />
       </div>
 
       <div
@@ -60,46 +51,53 @@ const PreviewSection = ({ isDarkTheme }) => {
         }}
         className={`markdown-preview prose ${
           isDarkTheme ? "prose-invert" : ""
-        } w-full ${
-          isPreviewFullScreen ? "lg:h-[66.9vh]" : "lg:h-[66.9vh]"
-        } p-4 ${
+        } w-full h-[70vh] p-4 ${
           isDarkTheme ? "bg-gray-800 text-gray-300" : "bg-white text-gray-800"
         } ${
           activeTab === "preview" ? "h-[39.5vh]" : ""
-        } rounded-t-md overflow-y-auto custom-scrollbar`}
+        } rounded-md overflow-y-auto custom-scrollbar`}
       >
         {markdown ? (
           <ReactMarkdown
-            children={markdown}
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={[rehypeRaw]}
             components={{
               code({ node, inline, className, children, ...props }) {
                 const match = /language-(\w+)/.exec(className || "");
-                return !inline && match ? (
-                  <SyntaxHighlighter
-                    style={materialLight}
-                    language={match[1]}
-                    PreTag="div"
-                    {...props}
-                  >
-                    {String(children).replace(/\n$/, "")}
-                  </SyntaxHighlighter>
-                ) : (
+                const language = match ? match[1] : "";
+
+                if (!inline && language) {
+                  return (
+                    <SyntaxHighlighter
+                      style={oneDark}
+                      language={language}
+                      PreTag="div"
+                      customStyle={{
+                        margin: "1.5em 0",
+                        borderRadius: "0.375rem",
+                      }}
+                      {...props}
+                    >
+                      {String(children).replace(/\n$/, "")}
+                    </SyntaxHighlighter>
+                  );
+                }
+                return (
                   <code className={className} {...props}>
                     {children}
                   </code>
                 );
               },
             }}
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeSanitize]}
-          />
+          >
+            {renderedContent}
+          </ReactMarkdown>
         ) : (
           <p className="text-gray-400 italic">
             Your rendered markdown preview will appear here...
           </p>
         )}
       </div>
-      <StatusBar type="html" />
       <style jsx>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 8px;

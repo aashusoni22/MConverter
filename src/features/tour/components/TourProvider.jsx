@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Joyride, { STATUS, ACTIONS } from "react-joyride";
-import { setRunTour, setStepIndex } from "../slices/tourSlice";
+import { completeTour, setRunTour, setStepIndex } from "../slices/tourSlice";
 import { useMediaQuery } from "react-responsive";
 import toast from "react-hot-toast";
 
@@ -11,17 +11,16 @@ const TourProvider = ({ theme }) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const getDesktopSteps = () => {
-    // Log available elements
-    console.log("Checking for tour elements:", {
+    const elements = {
       sidebar: document.querySelector(".sidebar-section"),
       editor: document.querySelector(".editor-section"),
       templates: document.querySelector(".templates-button"),
       preview: document.querySelector(".preview-section"),
       toolbar: document.querySelector(".toolbar-section"),
-    });
+    };
 
     return [
-      {
+      elements.sidebar && {
         target: ".sidebar-section",
         content: (
           <div className="space-y-2">
@@ -37,7 +36,7 @@ const TourProvider = ({ theme }) => {
         placement: "right",
         disableBeacon: true,
       },
-      {
+      elements.editor && {
         target: ".editor-section",
         content: (
           <div className="space-y-2">
@@ -51,14 +50,14 @@ const TourProvider = ({ theme }) => {
             </div>
           </div>
         ),
-        placement: "left",
+        placement: "right",
         styles: {
           spotlight: {
             borderRadius: "12px",
           },
         },
       },
-      {
+      elements.templates && {
         target: ".templates-button",
         content: (
           <div className="space-y-2">
@@ -74,14 +73,14 @@ const TourProvider = ({ theme }) => {
             </ul>
           </div>
         ),
-        placement: "right",
+        placement: "left",
         styles: {
           spotlight: {
             borderRadius: "8px",
           },
         },
       },
-      {
+      elements.preview && {
         target: ".preview-section",
         content: (
           <div className="space-y-2">
@@ -103,7 +102,7 @@ const TourProvider = ({ theme }) => {
           },
         },
       },
-      {
+      elements.toolbar && {
         target: ".toolbar-section",
         content: (
           <div className="space-y-2">
@@ -140,7 +139,7 @@ const TourProvider = ({ theme }) => {
           },
         },
       },
-    ];
+    ].filter(Boolean);
   };
 
   const getMobileSteps = () => [
@@ -179,10 +178,9 @@ const TourProvider = ({ theme }) => {
 
   const handleJoyrideCallback = (data) => {
     const { status, type, index, action } = data;
-    console.log("Joyride callback:", { status, type, index, action });
 
     if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
-      dispatch(setRunTour(false));
+      dispatch(completeTour());
       const toastContent = (
         <div className="flex items-center gap-2">
           <span>🎉</span>
@@ -194,12 +192,12 @@ const TourProvider = ({ theme }) => {
           </div>
         </div>
       );
-      toast.custom(toastContent, {
-        duration: 4000,
-        position: "bottom-center",
+      toast.success(toastContent, {
+        duration: 3000,
+        position: "top-center",
       });
     } else if ([ACTIONS.CLOSE].includes(action)) {
-      dispatch(setRunTour(false));
+      dispatch(completeTour());
     }
 
     if (type === "step:after") {
@@ -208,7 +206,6 @@ const TourProvider = ({ theme }) => {
   };
 
   const steps = isMobile ? getMobileSteps() : getDesktopSteps();
-  console.log("Rendering Joyride with steps:", steps);
 
   return (
     <Joyride

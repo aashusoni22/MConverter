@@ -350,7 +350,7 @@ const EditorTools = ({ editorRef, isDarkTheme }) => {
   }  ${markdown.length < 1 ? "opacity-50 cursor-not-allowed" : ""}`;
 
   return (
-    <div className="flex flex-col space-y-2">
+    <div className="flex flex-col space-y-2 toolbar-section">
       <div className="flex items-center space-x-2 flex-wrap gap-y-2">
         <div className="flex items-center space-x-1">
           <button
@@ -478,7 +478,7 @@ const EditorTools = ({ editorRef, isDarkTheme }) => {
                   }
                 }}
                 placeholder="Search..."
-                className={`pl-4 pr-24 py-2 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-[16rem] ${
+                className={`pl-4 pr-24 py-[0.45rem] text-sm rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 w-[15rem] ${
                   isDarkTheme
                     ? "bg-gray-800 text-gray-100"
                     : "bg-gray-100 text-gray-800"

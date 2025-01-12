@@ -1,16 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
+  showWelcomeModal: true,
   runTour: false,
   stepIndex: 0,
   tourKey: 0,
-  showWelcomeModal: !localStorage.getItem("hideWelcome"),
+  userTourStatus: null,
 };
 
 const tourSlice = createSlice({
   name: "tour",
   initialState,
   reducers: {
+    setShowWelcomeModal: (state, action) => {
+      state.showWelcomeModal = action.payload;
+    },
     setRunTour: (state, action) => {
       state.runTour = action.payload;
     },
@@ -20,17 +24,25 @@ const tourSlice = createSlice({
     incrementTourKey: (state) => {
       state.tourKey += 1;
     },
-    setShowWelcomeModal: (state, action) => {
-      state.showWelcomeModal = action.payload;
+    completeTour: (state) => {
+      state.showWelcomeModal = false;
+      state.runTour = false;
+      localStorage.setItem("tourCompleted", "true");
+    },
+    setUserTourStatus: (state, action) => {
+      state.userTourStatus = action.payload;
+      state.showWelcomeModal = !action.payload;
     },
   },
 });
 
 export const {
+  setShowWelcomeModal,
   setRunTour,
   setStepIndex,
   incrementTourKey,
-  setShowWelcomeModal,
+  completeTour,
+  setUserTourStatus,
 } = tourSlice.actions;
 
 export default tourSlice.reducer;

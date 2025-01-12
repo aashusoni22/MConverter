@@ -16,6 +16,7 @@ const initialState = {
   isUploading: false,
   uploadError: null,
   view: "split",
+  autoSaveStatus: "idle",
 };
 
 const markdownSlice = createSlice({
@@ -86,6 +87,9 @@ const markdownSlice = createSlice({
         state.isPreviewFullScreen = false;
       }
     },
+    setAutoSaveStatus: (state, action) => {
+      state.autoSaveStatus = action.payload;
+    },
   },
 });
 
@@ -106,6 +110,7 @@ export const {
   setUploadError,
   insertText,
   setView,
+  autoSaveStatus,
 } = markdownSlice.actions;
 
 export default markdownSlice.reducer;

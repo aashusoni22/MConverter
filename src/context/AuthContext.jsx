@@ -10,6 +10,7 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { auth } from "../lib/firebase";
+import { createUserProfile, getUserProfile } from "../lib/firestore";
 
 const AuthContext = createContext({});
 
@@ -30,16 +31,36 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signUp = async (email, password) => {
-    return createUserWithEmailAndPassword(auth, email, password);
+    try {
+      const result = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      // Create user profile
+      await createUserProfile(result.user.uid, {
+        email: result.user.email,
+        displayName: result.user.displayName,
+      });
+      return result;
+    } catch (error) {
+      console.error("Sign up error:", error);
+      throw error;
+    }
   };
-
-  const logOut = () => signOut(auth);
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
-      // Google user info is automatically set in Firebase user object
+      // Check if user profile exists, if not create one
+      const profile = await getUserProfile(result.user.uid);
+      if (!profile) {
+        await createUserProfile(result.user.uid, {
+          email: result.user.email,
+          displayName: result.user.displayName,
+        });
+      }
       return result;
     } catch (error) {
       console.error("Google sign in error:", error);
@@ -51,7 +72,14 @@ export const AuthProvider = ({ children }) => {
     const provider = new GithubAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
-      // GitHub user info is automatically set in Firebase user object
+      // Check if user profile exists, if not create one
+      const profile = await getUserProfile(result.user.uid);
+      if (!profile) {
+        await createUserProfile(result.user.uid, {
+          email: result.user.email,
+          displayName: result.user.displayName,
+        });
+      }
       return result;
     } catch (error) {
       console.error("Github sign in error:", error);
@@ -59,17 +87,11 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const updateUserProfile = async (data) => {
-    if (!user) return;
+  const logOut = async () => {
     try {
-      await updateProfile(user, {
-        displayName: data.displayName,
-        // photoURL can be added here if needed
-      });
-      // Force a user object refresh
-      setUser({ ...auth.currentUser });
+      await signOut(auth);
     } catch (error) {
-      console.error("Error updating profile:", error);
+      console.error("Sign out error:", error);
       throw error;
     }
   };
@@ -84,7 +106,6 @@ export const AuthProvider = ({ children }) => {
         signInWithGoogle,
         signInWithGithub,
         loading,
-        updateUserProfile,
       }}
     >
       {!loading && children}

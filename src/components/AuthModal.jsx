@@ -31,7 +31,6 @@ const AuthModal = ({
         onClose();
       } else {
         await signUp(formData.email, formData.password);
-        // Call onSignupComplete to trigger the ProfileModal
         onSignupComplete();
         onClose();
       }

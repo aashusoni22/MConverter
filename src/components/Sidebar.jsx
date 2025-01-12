@@ -30,6 +30,8 @@ import FAQModal from "../features/sidebar/components/FAQModal";
 import AboutModal from "../features/sidebar/components/AboutModal";
 import SettingsModal from "../features/sidebar/components/SettingsModal";
 import { useSettings } from "../hooks/useSettings";
+import DocumentsModal from "../features/sidebar/components/DocumentsModal";
+import toast from "react-hot-toast";
 
 const Sidebar = () => {
   const { theme } = useContext(ThemeContext);
@@ -49,6 +51,8 @@ const Sidebar = () => {
   const [showExamplesModal, setShowExamplesModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [isNewUser, setIsNewUser] = useState(false);
+  const [showDocumentsModal, setShowDocumentsModal] = useState(false);
+
   const { markdown, fontSize, fontFamily } = useSelector(
     (state) => state.markdown
   );
@@ -59,7 +63,7 @@ const Sidebar = () => {
     {
       category: "Main",
       items: [
-        { id: "editor", icon: FileText, label: "Editor" },
+        { id: "documents", icon: FileText, label: "My Documents" },
         { id: "templates", icon: Layout, label: "Templates" },
         { id: "examples", icon: Box, label: "Examples" },
       ],
@@ -88,7 +92,9 @@ const Sidebar = () => {
 
   const handleItemClick = (itemId) => {
     setActiveItem(itemId);
-    if (itemId === "guides") {
+    if (itemId === "documents") {
+      setShowDocumentsModal(true);
+    } else if (itemId === "guides") {
       setShowGuidesModal(true);
     } else if (itemId === "print") {
       setShowPrintModal(true);
@@ -136,7 +142,6 @@ const Sidebar = () => {
   };
 
   const getInitials = (name) => {
-    console.log("Display name:", name);
     if (!name) return "?";
     return name.split(" ")[0][0].toUpperCase();
   };
@@ -148,7 +153,7 @@ const Sidebar = () => {
           fontFamily: settings.fontFamily,
           fontSize: settings.fontSize,
         }}
-        className={`${
+        className={`sidebar-section ${
           isDarkTheme
             ? "bg-gray-900 border-gray-700"
             : "bg-white border-gray-200"
@@ -236,7 +241,6 @@ const Sidebar = () => {
                       isExpanded ? "w-8 h-8" : "w-5 h-5"
                     } rounded-full bg-blue-500 flex items-center justify-center text-white font-medium`}
                   >
-                    {console.log("User object:", user)} {/* Debug log */}
                     {getInitials(user?.displayName)}
                   </div>
                   {isExpanded && (
@@ -336,10 +340,14 @@ const Sidebar = () => {
             await updateUserProfile(profileData);
             setIsNewUser(false);
           } catch (error) {
-            console.error("Error updating profile:", error);
+            toast.error("Error updating profile");
             throw error;
           }
         }}
+      />
+      <DocumentsModal
+        isOpen={showDocumentsModal}
+        onClose={() => setShowDocumentsModal(false)}
       />
     </>
   );
