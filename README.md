@@ -11,7 +11,7 @@
 [![Firebase](https://img.shields.io/badge/Firebase-Ready-FFCA28?logo=firebase&logoColor=white)](https://firebase.google.com)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-Ready-06B6D4?logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
 
-[Demo](https://mconverter.vercel.app) · [Report Bug](https://github.com/yourusername/MConverter/issues) · [Request Feature](https://github.com/yourusername/MConverter/issues)
+[Demo](https://m-converter.vercel.app) · [Report Bug](https://github.com/aashusoni22/MConverter/issues) · [Request Feature](https://github.com/aashusoni22/MConverter/issues)
 
 </div>
 
