@@ -13,6 +13,9 @@ const initialState = {
   isSettingsOpen: false,
   copied: false,
   downloaded: false,
+  isUploading: false,
+  uploadError: null,
+  view: "split",
 };
 
 const markdownSlice = createSlice({
@@ -58,6 +61,31 @@ const markdownSlice = createSlice({
     setDownloaded: (state, action) => {
       state.downloaded = action.payload;
     },
+    setUploading: (state, action) => {
+      state.isUploading = action.payload;
+    },
+    setUploadError: (state, action) => {
+      state.uploadError = action.payload;
+    },
+    insertText: (state, action) => {
+      const { position, text, replaceLength = 0 } = action.payload;
+      const currentText = state.markdown;
+      state.markdown =
+        currentText.slice(0, position) +
+        text +
+        currentText.slice(position + replaceLength);
+    },
+    setView: (state, action) => {
+      state.view = action.payload;
+      if (action.payload === "editor") {
+        state.isPreviewFullScreen = false;
+      } else if (action.payload === "preview") {
+        state.isEditorFullScreen = false;
+      } else if (action.payload === "split") {
+        state.isEditorFullScreen = false;
+        state.isPreviewFullScreen = false;
+      }
+    },
   },
 });
 
@@ -74,6 +102,10 @@ export const {
   toggleSettings,
   setCopied,
   setDownloaded,
+  setUploading,
+  setUploadError,
+  insertText,
+  setView,
 } = markdownSlice.actions;
 
 export default markdownSlice.reducer;

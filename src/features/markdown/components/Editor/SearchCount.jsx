@@ -18,7 +18,6 @@ const SearchCount = ({ searchQuery, textareaRef }) => {
         const found = [];
         const positions = [];
 
-        // Find all matches and their line positions
         let match;
         while ((match = regex.exec(markdown)) !== null) {
           found.push(match);

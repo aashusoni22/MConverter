@@ -1,17 +1,12 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setCopied,
-  setDownloaded,
-  togglePreviewFullScreen,
-} from "../../slices/markdownSlice";
-import CopyButton from "../shared/CopyButton";
-import DownloadButton from "../shared/DownloadButton";
-import FullScreenButton from "../shared/FullScreenButton";
+import { setCopied, setDownloaded } from "../../slices/markdownSlice";
+import { Check, Copy, Download } from "lucide-react";
+import toast from "react-hot-toast";
 
 const PreviewControls = ({ isDarkTheme }) => {
   const dispatch = useDispatch();
-  const { markdown, isPreviewFullScreen, copied, downloaded } = useSelector(
+  const { markdown, copied, downloaded } = useSelector(
     (state) => state.markdown
   );
 
@@ -20,6 +15,7 @@ const PreviewControls = ({ isDarkTheme }) => {
       await navigator.clipboard.writeText(markdown);
       dispatch(setCopied(true));
       setTimeout(() => dispatch(setCopied(false)), 3000);
+      toast.success("Markdown Copied");
     }
   };
 
@@ -35,25 +31,29 @@ const PreviewControls = ({ isDarkTheme }) => {
     }
   };
 
+  const buttonClass = `p-2 rounded-lg transition-all duration-200 ${
+    isDarkTheme
+      ? "bg-gray-800 hover:bg-gray-700 text-gray-200"
+      : "bg-gray-200 hover:bg-gray-300 text-gray-800"
+  } ${markdown.length < 1 ? "opacity-50 cursor-not-allowed" : ""}`;
+
   return (
     <div className="flex space-x-2 preview-controls">
-      <CopyButton
-        onCopy={handleCopy}
-        copied={copied}
+      <button
+        onClick={handleCopy}
         disabled={markdown.length < 1}
-        isDarkTheme={isDarkTheme}
-      />
-      <DownloadButton
-        onDownload={handleDownload}
-        downloaded={downloaded}
+        className={buttonClass}
+      >
+        {copied ? <Check size={18} /> : <Copy size={18} />}
+      </button>
+
+      <button
+        onClick={handleDownload}
         disabled={markdown.length < 1}
-        isDarkTheme={isDarkTheme}
-      />
-      <FullScreenButton
-        isFullScreen={isPreviewFullScreen}
-        toggleFullScreen={() => dispatch(togglePreviewFullScreen())}
-        isDarkTheme={isDarkTheme}
-      />
+        className={buttonClass}
+      >
+        <Download size={18} />
+      </button>
     </div>
   );
 };

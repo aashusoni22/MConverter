@@ -1,35 +1,139 @@
-@import url("https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap");
+/* Import fonts with specific weights needed */
+@import url("https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --code-bg: 247 250 252;
-  --code-color: 229 62 62;
+  /* Light theme variables */
+  --code-bg: 241 245 249; /* Slate 100 */
+  --code-color: 239 68 68; /* Red 500 */
+  --selection-bg: 219 234 254; /* Blue 100 */
+  --selection-color: 30 58 138; /* Blue 900 */
 }
 
 .dark {
-  --code-bg: 45 55 72;
-  --code-color: 245 101 101;
+  /* Dark theme variables */
+  --code-bg: 30 41 59; /* Slate 800 */
+  --code-color: 248 113 113; /* Red 400 */
+  --selection-bg: 30 58 138; /* Blue 900 */
+  --selection-color: 219 234 254; /* Blue 100 */
 }
 
-/* Extend the styles for Markdown preview */
-@layer utilities {
-  .markdown-preview h1,
-  .markdown-preview h2 {
-    @apply border-b border-gray-700 pb-2 mb-4;
+/* Selection styles */
+::selection {
+  background-color: rgb(var(--selection-bg));
+  color: rgb(var(--selection-color));
+}
+
+/* Markdown preview enhancements */
+@layer components {
+  .markdown-preview {
+    @apply prose prose-lg max-w-none prose-headings:scroll-mt-20;
   }
 
+  .dark .markdown-preview {
+    @apply prose-invert;
+  }
+
+  /* Headings */
   .markdown-preview h1 {
-    @apply text-4xl font-bold pt-5;
+    @apply text-4xl font-extrabold tracking-tight border-b pb-4 mb-6;
   }
 
   .markdown-preview h2 {
-    @apply text-3xl font-semibold;
+    @apply text-3xl font-bold tracking-tight border-b pb-3 mb-5;
   }
 
   .markdown-preview h3 {
-    @apply text-2xl font-medium;
+    @apply text-2xl font-semibold tracking-tight mb-4;
   }
+
+  /* Links */
+  .markdown-preview a {
+    @apply transition-colors duration-200 decoration-2 underline-offset-2 
+    hover:decoration-blue-500 dark:hover:decoration-blue-400;
+  }
+
+  /* Lists */
+  .markdown-preview ul,
+  .markdown-preview ol {
+    @apply my-6 space-y-2;
+  }
+
+  .markdown-preview li > ul,
+  .markdown-preview li > ol {
+    @apply my-2 ml-6;
+  }
+
+  /* Blockquotes */
+  .markdown-preview blockquote {
+    @apply italic border-l-4 border-gray-300 dark:border-gray-700 pl-6 my-6;
+  }
+
+  /* Code blocks */
+  .markdown-preview pre {
+    @apply rounded-lg shadow-md border border-gray-200 dark:border-gray-700;
+  }
+
+  .markdown-preview code {
+    @apply font-mono text-sm rounded px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800;
+  }
+
+  .markdown-preview pre code {
+    @apply bg-transparent p-0 border-0;
+  }
+
+  /* Tables */
+  .markdown-preview table {
+    @apply w-full my-8 border-collapse;
+  }
+
+  .markdown-preview th {
+    @apply bg-gray-50 dark:bg-gray-800 font-semibold p-3 text-left border 
+    border-gray-200 dark:border-gray-700;
+  }
+
+  .markdown-preview td {
+    @apply p-3 border border-gray-200 dark:border-gray-700;
+  }
+
+  /* Images */
+  .markdown-preview img {
+    @apply rounded-lg shadow-md my-8 mx-auto;
+  }
+
+  /* Horizontal rules */
+  .markdown-preview hr {
+    @apply my-12 border-t-2 border-gray-200 dark:border-gray-700;
+  }
+
+  /* Task lists */
+  .markdown-preview input[type="checkbox"] {
+    @apply mr-2 rounded border-gray-300 dark:border-gray-700 
+    text-blue-500 dark:text-blue-400 focus:ring-blue-500 dark:focus:ring-blue-400;
+  }
+}
+
+/* Scrollbar styling */
+.markdown-preview::-webkit-scrollbar {
+  @apply w-2;
+}
+
+.markdown-preview::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+.markdown-preview::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-gray-700 rounded-full;
+}
+
+.markdown-preview::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400 dark:bg-gray-600;
+}
+
+/* Keep yellow highlight color */
+.bg-yellow-300 {
+  background-color: #fef08a;
 }

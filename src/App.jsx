@@ -1,26 +1,51 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { ThemeContext } from "./context/ThemeContext";
 import MConverterComponents from "./features/markdown/components/MConverterComponents";
+
+import Header from "./components/Header";
+import Sidebar from "./components/Sidebar";
+import { AuthProvider } from "./context/AuthContext";
+import { useSettings } from "./hooks/useSettings";
 import TourProvider from "./features/tour/components/TourProvider";
 import WelcomeModal from "./features/tour/components/WelcomeModal";
 import HelpButton from "./features/tour/components/HelpButton";
-import Header from "./components/Header";
 
 const App = () => {
-  const { theme } = useContext(ThemeContext);
+  const { theme, setTheme } = useContext(ThemeContext);
+  const { settings } = useSettings();
+
+  useEffect(() => {
+    if (settings.themePreference === "system") {
+      const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      setTheme(isDark ? "dark" : "light");
+    } else {
+      setTheme(settings.themePreference);
+    }
+  }, [settings.themePreference]);
 
   return (
-    <div
-      className={`font-chakra min-h-screen ${
-        theme === "dark" ? "bg-gray-800" : "bg-white"
-      } transition-colors duration-300 overflow-y-hidden`}
-    >
-      <Header />
-      <TourProvider theme={theme} />
-      <WelcomeModal theme={theme} />
-      <HelpButton theme={theme} />
-      <MConverterComponents />
-    </div>
+    <AuthProvider>
+      <div
+        style={{
+          fontFamily: settings.fontFamily,
+          fontSize: settings.fontSize,
+        }}
+        className={`font-chakra min-h-screen ${
+          theme === "dark" ? "bg-gray-800" : "bg-white"
+        } transition-colors duration-300`}
+      >
+        <TourProvider theme={theme} />
+        <WelcomeModal theme={theme} />
+        <Header className="fixed top-0 w-full z-50" />
+        <div className="flex">
+          <Sidebar />
+          <main className="flex-1 transition-all duration-300 ml-20 lg:ml-24 lg:mr-4 mt-1">
+            <MConverterComponents />
+          </main>
+        </div>
+        <HelpButton theme={theme} />
+      </div>
+    </AuthProvider>
   );
 };
 

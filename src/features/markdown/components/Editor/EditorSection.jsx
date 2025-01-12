@@ -1,138 +1,106 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setMarkdown, setEditorEnabled } from "../../slices/markdownSlice";
-import EditorControls from "./EditorControls";
 import EditorHeader from "./EditorHeader";
 import MarkdownUpload from "./MarkdownUpload";
+import StatusBar from "../shared/StatusBar";
+import EditorTools from "./EditorTools";
+import { useSettings } from "../../../../hooks/useSettings";
+import { EditIcon } from "lucide-react";
 
 const EditorSection = ({ isDarkTheme }) => {
   const dispatch = useDispatch();
   const textareaRef = useRef(null);
-  const overlayRef = useRef(null);
-  const {
-    markdown,
-    editorEnabled,
-    fontSize,
-    fontFamily,
-    isEditorFullScreen,
-    activeTab,
-    isPreviewFullScreen,
-    searchQuery,
-  } = useSelector((state) => state.markdown);
-
-  const handleMarkdownChange = (event) => {
-    dispatch(setMarkdown(event.target.value));
-  };
-
-  // Sync overlay scroll with textarea
-  useEffect(() => {
-    const textarea = textareaRef.current;
-    const overlay = overlayRef.current;
-
-    if (!textarea || !overlay) return;
-
-    const handleScroll = () => {
-      overlay.scrollTop = textarea.scrollTop;
-    };
-
-    textarea.addEventListener("scroll", handleScroll);
-    return () => textarea.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // Create highlighted HTML content
-  const getHighlightedContent = () => {
-    if (!searchQuery) return markdown;
-
-    try {
-      const escapedSearchQuery = searchQuery.replace(
-        /[.*+?^${}()|[\]\\]/g,
-        "\\$&"
-      );
-      const parts = markdown.split(new RegExp(`(${escapedSearchQuery})`, "gi"));
-      return parts
-        .map((part, i) =>
-          part.toLowerCase() === searchQuery.toLowerCase()
-            ? `<mark class="bg-yellow-200 dark:bg-yellow-800">${part}</mark>`
-            : part
-        )
-        .join("");
-    } catch (error) {
-      console.error("Regex error:", error);
-      return markdown;
-    }
-  };
-
+  const { markdown, editorEnabled, fontSize, fontFamily, view } = useSelector(
+    (state) => state.markdown
+  );
+  const { settings } = useSettings();
   return (
     <div
-      className={`editor-section w-full ${
-        isDarkTheme ? "bg-gray-900" : "bg-gray-100 text-gray-800"
-      } rounded-md shadow-md p-4 ${
-        isEditorFullScreen ? "h-[80vh] md:w-full" : "lg:w-1/2"
-      } ${isPreviewFullScreen ? "hidden" : "block"} ${
-        activeTab === "editor"
-          ? "block h-[50vh] md:h-[80vh]"
-          : "hidden md:block"
+      style={{
+        fontSize: settings.fontSize,
+        fontFamily: settings.fontFamily,
+      }}
+      className={`w-full ${
+        isDarkTheme ? "bg-gray-900" : "bg-gray-100"
+      } rounded-md shadow-lg p-4 ${
+        view === "editor"
+          ? "w-full h-[79.2vh]"
+          : view === "split"
+          ? "lg:w-1/2 h-[79vh]"
+          : "hidden"
       }`}
     >
-      <div className="flex justify-between items-center mb-5">
-        <EditorHeader />
-        <EditorControls textareaRef={textareaRef} isDarkTheme={isDarkTheme} />
+      <div className="flex flex-col h-full">
+        <div className="flex justify-between items-center mb-4">
+          <span className="flex items-center space-x-2">
+            <EditIcon
+              className={`${
+                isDarkTheme ? "text-gray-400" : "text-gray-500"
+              } w-5 h-5`}
+            />
+            <h2
+              className={`${
+                isDarkTheme ? "text-white" : "text-gray-700"
+              } text-lg font-semibold`}
+            >
+              Editor
+            </h2>
+          </span>
+          <EditorTools editorRef={textareaRef} isDarkTheme={isDarkTheme} />
+        </div>
+
+        {!editorEnabled ? (
+          <MarkdownUpload
+            onMarkdownLoad={(content) => {
+              dispatch(setMarkdown(content));
+              dispatch(setEditorEnabled(true));
+            }}
+            onStartWriting={() => dispatch(setEditorEnabled(true))}
+          />
+        ) : (
+          <div className="flex-1 flex flex-col">
+            <div className="relative flex-1">
+              <textarea
+                ref={textareaRef}
+                value={markdown}
+                onChange={(e) => dispatch(setMarkdown(e.target.value))}
+                style={{
+                  fontSize: settings.fontSize,
+                  fontFamily: settings.fontFamily,
+                  color: isDarkTheme ? "#e5e7eb" : "#1f2937",
+                  transition: "background-color 0.2s ease",
+                }}
+                className={`w-full h-full custom-scrollbar resize-none p-4 rounded-md focus:outline-none ${
+                  isDarkTheme
+                    ? "bg-gray-800 placeholder-gray-500"
+                    : "bg-white placeholder-gray-400"
+                }`}
+                placeholder="Type your markdown here..."
+                spellCheck="false"
+              />
+            </div>
+            <StatusBar type="markdown" />
+          </div>
+        )}
       </div>
 
-      {!editorEnabled ? (
-        <MarkdownUpload
-          onMarkdownLoad={(content) => {
-            dispatch(setMarkdown(content));
-            dispatch(setEditorEnabled(true));
-          }}
-          onStartWriting={() => dispatch(setEditorEnabled(true))}
-        />
-      ) : (
-        <div className="relative">
-          <textarea
-            ref={textareaRef}
-            style={{
-              fontSize: fontSize,
-              fontFamily: fontFamily,
-              color: "transparent",
-              caretColor: isDarkTheme ? "#e5e7eb" : "#1f2937",
-              background: "transparent",
-              position: "absolute",
-              top: 0,
-              left: 0,
-              margin: 0,
-              border: 0,
-              padding: "1rem",
-              resize: "none",
-              zIndex: 2,
-            }}
-            className={`w-full h-[39vh] md:h-[70vh] focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              activeTab === "editor" ? "h-[49vh]" : ""
-            } `}
-            placeholder="Type your markdown here..."
-            value={markdown}
-            onChange={handleMarkdownChange}
-          />
-          <div
-            ref={overlayRef}
-            style={{
-              fontSize: fontSize,
-              fontFamily: fontFamily,
-              padding: "1rem",
-              whiteSpace: "pre-wrap",
-              wordWrap: "break-word",
-              color: isDarkTheme ? "#e5e7eb" : "#1f2937",
-              position: "relative",
-              pointerEvents: "none",
-              minHeight: "100%",
-            }}
-            className={`w-full h-[39vh] md:h-[70vh] overflow-auto ${
-              isDarkTheme ? "bg-gray-800" : "bg-white"
-            } rounded-md`}
-            dangerouslySetInnerHTML={{ __html: getHighlightedContent() }}
-          />
-        </div>
-      )}
+      <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: ${isDarkTheme ? "#1f2937" : "#f3f4f6"};
+          border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: ${isDarkTheme ? "#4b5563" : "#d1d5db"};
+          border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: ${isDarkTheme ? "#6b7280" : "#9ca3af"};
+        }
+      `}</style>
     </div>
   );
 };
