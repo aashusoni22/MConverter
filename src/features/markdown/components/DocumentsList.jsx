@@ -10,7 +10,7 @@ import {
 } from "../slices/documentsSlice";
 import { setMarkdown, setEditorEnabled } from "../slices/markdownSlice";
 import { FileText, Trash2, Edit, Calendar } from "lucide-react";
-import EditableTitle from "./EditableTitle.JSX";
+import EditableTitle from "./EditableTitle";
 
 const DocumentsList = () => {
   const dispatch = useDispatch();
