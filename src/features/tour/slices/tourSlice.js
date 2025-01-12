@@ -1,11 +1,13 @@
+// tourSlice.js
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  showWelcomeModal: true,
+  showWelcomeModal: false,
+  isLoading: true,
+  userTourStatus: false,
   runTour: false,
-  stepIndex: 0,
+  stepIndex: -1,
   tourKey: 0,
-  userTourStatus: null,
 };
 
 const tourSlice = createSlice({
@@ -14,6 +16,15 @@ const tourSlice = createSlice({
   reducers: {
     setShowWelcomeModal: (state, action) => {
       state.showWelcomeModal = action.payload;
+    },
+    setIsLoading: (state, action) => {
+      state.isLoading = action.payload;
+    },
+    setUserTourStatus: (state, action) => {
+      state.userTourStatus = action.payload;
+      if (action.payload === true) {
+        state.showWelcomeModal = false;
+      }
     },
     setRunTour: (state, action) => {
       state.runTour = action.payload;
@@ -25,24 +36,36 @@ const tourSlice = createSlice({
       state.tourKey += 1;
     },
     completeTour: (state) => {
-      state.showWelcomeModal = false;
       state.runTour = false;
-      localStorage.setItem("tourCompleted", "true");
+      state.stepIndex = -1;
+      state.showWelcomeModal = false;
+      state.userTourStatus = true;
     },
-    setUserTourStatus: (state, action) => {
-      state.userTourStatus = action.payload;
-      state.showWelcomeModal = !action.payload;
+    resetTourState: (state) => {
+      state.showWelcomeModal = false;
+      state.userTourStatus = false;
+      state.runTour = false;
+      state.stepIndex = -1;
     },
   },
 });
 
 export const {
   setShowWelcomeModal,
+  setIsLoading,
+  setUserTourStatus,
   setRunTour,
   setStepIndex,
   incrementTourKey,
   completeTour,
-  setUserTourStatus,
+  resetTourState,
 } = tourSlice.actions;
+
+// Selectors
+export const selectTourState = (state) => state.tour;
+export const selectShowWelcomeModal = (state) => state.tour.showWelcomeModal;
+export const selectIsLoading = (state) => state.tour.isLoading;
+export const selectUserTourStatus = (state) => state.tour.userTourStatus;
+export const selectTourKey = (state) => state.tour.tourKey;
 
 export default tourSlice.reducer;

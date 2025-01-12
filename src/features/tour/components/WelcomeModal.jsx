@@ -4,8 +4,8 @@ import {
   setShowWelcomeModal,
   setRunTour,
   setStepIndex,
-  completeTour,
   setUserTourStatus,
+  setIsLoading,
 } from "../slices/tourSlice";
 import { motion, AnimatePresence } from "framer-motion";
 import { FileText, Sparkles, Code, Cloud, ArrowRight } from "lucide-react";
@@ -14,7 +14,7 @@ import { getUserProfile, updateUserTourStatus } from "../../../lib/firestore";
 
 const WelcomeModal = ({ theme }) => {
   const dispatch = useDispatch();
-  const { showWelcomeModal, userTourStatus } = useSelector(
+  const { showWelcomeModal, userTourStatus, isLoading } = useSelector(
     (state) => state.tour
   );
   const isDarkTheme = theme === "dark";
@@ -23,12 +23,26 @@ const WelcomeModal = ({ theme }) => {
   useEffect(() => {
     const checkTourStatus = async () => {
       if (user) {
-        const profile = await getUserProfile(user.uid);
-        if (profile) {
-          dispatch(setUserTourStatus(profile.hasSeenTour));
+        try {
+          const profile = await getUserProfile(user.uid);
+          if (profile) {
+            dispatch(setUserTourStatus(profile.hasSeenTour));
+            dispatch(setShowWelcomeModal(!profile.hasSeenTour));
+          } else {
+            dispatch(setShowWelcomeModal(true));
+          }
+        } catch (error) {
+          console.error("Error fetching tour status:", error);
+          dispatch(setShowWelcomeModal(false));
         }
+      } else {
+        const hasSeenTour = localStorage.getItem("hasSeenTour") === "true";
+        dispatch(setShowWelcomeModal(!hasSeenTour));
+        dispatch(setUserTourStatus(hasSeenTour));
       }
+      dispatch(setIsLoading(false));
     };
+
     checkTourStatus();
   }, [user, dispatch]);
 
@@ -36,6 +50,8 @@ const WelcomeModal = ({ theme }) => {
     if (user) {
       await updateUserTourStatus(user.uid);
       dispatch(setUserTourStatus(true));
+    } else {
+      localStorage.setItem("hasSeenTour", "true");
     }
     dispatch(setStepIndex(0));
     dispatch(setShowWelcomeModal(false));
@@ -48,11 +64,13 @@ const WelcomeModal = ({ theme }) => {
     if (user) {
       await updateUserTourStatus(user.uid);
       dispatch(setUserTourStatus(true));
+    } else {
+      localStorage.setItem("hasSeenTour", "true");
     }
     dispatch(setShowWelcomeModal(false));
   };
 
-  if (!showWelcomeModal || userTourStatus) return null;
+  if (isLoading || userTourStatus || !showWelcomeModal) return null;
 
   const features = [
     {
@@ -77,7 +95,6 @@ const WelcomeModal = ({ theme }) => {
       description: "Templates, custom themes, and keyboard shortcuts",
     },
   ];
-
   return (
     <AnimatePresence>
       {showWelcomeModal && (
