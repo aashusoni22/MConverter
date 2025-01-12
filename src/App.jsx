@@ -9,6 +9,7 @@ import { useSettings } from "./hooks/useSettings";
 import TourProvider from "./features/tour/components/TourProvider";
 import WelcomeModal from "./features/tour/components/WelcomeModal";
 import HelpButton from "./features/tour/components/HelpButton";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const App = () => {
   const { theme, setTheme } = useContext(ThemeContext);
@@ -25,6 +26,7 @@ const App = () => {
 
   return (
     <AuthProvider>
+      <SpeedInsights />
       <div
         style={{
           fontFamily: settings.fontFamily,
