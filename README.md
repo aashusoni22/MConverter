@@ -68,6 +68,8 @@ npm run dev
 <img src="https://github.com/user-attachments/assets/8384a786-9460-4985-9d45-91d03c2f2193" alt="MConverter Light Mode" width="45%">
 <img src="https://github.com/user-attachments/assets/c3eb6852-1611-401f-ae12-96625a67c3ad" alt="MConverter Light Mode" width="45%">
 <img src="https://github.com/user-attachments/assets/9b13db87-3579-4da3-8615-bb99fa41bd5a" alt="MConverter Light Mode" width="45%">
+<img src="https://github.com/user-attachments/assets/ea14a765-0976-4764-acc7-ffcf7d6b5d29" alt="MConverter Light Mode" width="45%">
+<img src="https://github.com/user-attachments/assets/c8104452-fe47-4bf0-a580-9e48f2199fa3" alt="MConverter Light Mode" width="45%">
 </div>
 
 ## 🌟 Key Features Explained
